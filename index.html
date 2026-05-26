@@ -1,0 +1,2813 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>HXC Tasks · Gestão de demandas</title>
+<meta name="description" content="Gestão de tarefas e demandas do time HXC Tech.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ============================================
+// SUPABASE CONFIG · cole sua URL e anon key aqui
+// (deixe assim para usar modo LOCAL · sem nuvem)
+// ============================================
+window.SUPABASE_CONFIG = {
+    url: 'https://obyowyzlwfpdsqfuenqq.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieW93eXpsd2ZwZHNxZnVlbnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU5NzIsImV4cCI6MjA5NTMzMTk3Mn0.yW1u0QDBJJfv_GYZlqwrQfWakbSl2s7ZDvZGQrAk1Bk'
+};
+</script>
+<style>
+/* ============================================
+   HXC TASKS · v1 · Stylesheet
+   Reaproveita paleta HiperXCAP, adaptado pra produtividade
+============================================ */
+
+:root {
+    /* Paleta HiperXCAP (mantida) */
+    --c-primary: #0166B3;
+    --c-primary-dark: #1A2F51;
+    --c-orange: #F39208;
+    --c-orange-light: #F8AF4F;
+
+    /* Status (cores das colunas Kanban) */
+    --st-backlog: #64748b;
+    --st-todo: #0166B3;
+    --st-doing: #F39208;
+    --st-review: #8b5cf6;
+    --st-done: #16a34a;
+
+    /* Prioridades */
+    --pr-baixa: #38bdf8;
+    --pr-media: #94a3b8;
+    --pr-alta: #f97316;
+    --pr-urgente: #ef4444;
+
+    /* Light theme */
+    --bg-app: linear-gradient(135deg, #0a1f4d 0%, #0166B3 50%, #2E5BBA 100%);
+    --bg-surface: #ffffff;
+    --bg-surface-2: #f8fafc;
+    --bg-surface-3: #f1f5f9;
+    --bg-input: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-on-dark: #ffffff;
+    --border: #e2e8f0;
+    --border-soft: #f1f5f9;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+    --shadow-xl: 0 12px 32px rgba(0,0,0,0.15);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    --font-display: 'Archivo Black', 'Bitner', Impact, sans-serif;
+    --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+[data-theme="dark"] {
+    --bg-app: linear-gradient(135deg, #050d20 0%, #0a1f4d 50%, #0d2b5e 100%);
+    --bg-surface: #1e293b;
+    --bg-surface-2: #0f172a;
+    --bg-surface-3: #1e293b;
+    --bg-input: #0f172a;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --border-soft: #1e293b;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+    --shadow-xl: 0 12px 32px rgba(0,0,0,0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+html, body {
+    font-family: var(--font-body);
+    background: var(--bg-app);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s;
+}
+body { padding: 24px 24px 80px; }
+body.login-mode { padding: 0; }
+h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.5px; }
+
+/* ============================================
+   LOGO HXC TASKS
+============================================ */
+.hxc-logo {
+    display: inline-flex;
+    align-items: baseline;
+    line-height: 1;
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    position: relative;
+    user-select: none;
+    white-space: nowrap;
+}
+.hxc-logo .hxc-hxc {
+    color: var(--c-primary);
+    position: relative;
+}
+.hxc-logo .hxc-hxc::after {
+    content: '✓';
+    position: absolute;
+    top: -0.32em;
+    right: -0.12em;
+    width: 0.42em;
+    height: 0.42em;
+    background: var(--c-primary);
+    color: var(--c-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.28em;
+    font-weight: 900;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1;
+    box-shadow: 0 0 0 0.04em white;
+    padding-bottom: 0.02em;
+}
+.hxc-logo .hxc-tasks {
+    color: var(--c-orange);
+    margin-left: 0.18em;
+}
+.hxc-logo.size-sm { font-size: 28px; }
+.hxc-logo.size-md { font-size: 44px; }
+.hxc-logo.size-lg { font-size: 64px; }
+.brand-pill {
+    background: white;
+    padding: 12px 26px;
+    border-radius: 50px;
+    box-shadow: var(--shadow-lg);
+    display: inline-block;
+}
+
+/* ============================================
+   LOGIN
+============================================ */
+.login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg-app);
+}
+.login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    text-align: center;
+}
+.login-logo { display: inline-block; margin: 0 auto 24px; }
+.login-card h1 { color: var(--c-primary-dark); font-size: 28px; margin-bottom: 6px; }
+.login-card .login-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+.login-card .form-group { text-align: left; margin-bottom: 16px; }
+.login-card .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+}
+.login-card .form-input:focus { outline: none; border-color: var(--c-primary); }
+.login-error { color: #ef4444; font-size: 12px; margin-top: 8px; display: none; text-align: left; }
+.login-error.active { display: block; }
+.login-card .btn.primary { width: 100%; padding: 14px; font-size: 15px; margin-top: 8px; }
+.login-card .login-help {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+.login-card .login-help kbd {
+    background: var(--bg-surface-3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 11px;
+}
+
+/* ============================================
+   HEADER
+============================================ */
+.header {
+    max-width: 1480px;
+    margin: 0 auto 28px;
+    text-align: center;
+    color: var(--text-on-dark);
+    position: relative;
+}
+.header-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.header-controls-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.user-chip {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+.user-chip .avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--c-orange);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+}
+.user-chip .role-tag {
+    background: rgba(255,255,255,0.25);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.conn-status {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+.conn-status.online { background: rgba(22,163,74,0.25); border-color: rgba(22,163,74,0.5); }
+.conn-status.syncing { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.5); animation: pulse-conn 1.4s infinite; }
+.conn-status.offline { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.5); }
+.conn-status.error { background: rgba(239,68,68,0.4); }
+.conn-status.local { background: rgba(148,163,184,0.25); }
+@keyframes pulse-conn { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.icon-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.icon-toggle:hover { background: rgba(255,255,255,0.25); }
+.header h1 {
+    font-family: var(--font-display);
+    font-size: 38px;
+    margin-bottom: 6px;
+    color: white;
+}
+.subtitle {
+    font-size: 15px;
+    opacity: 0.85;
+    margin-bottom: 24px;
+}
+
+/* Stats compactos */
+.stats {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+.stat {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    min-width: 90px;
+}
+.stat-value { font-family: var(--font-display); font-size: 24px; display: block; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 11px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ============================================
+   TOOLBAR
+============================================ */
+.toolbar {
+    max-width: 1480px;
+    margin: 0 auto 14px;
+    background: var(--bg-surface);
+    padding: 12px 16px;
+    border-radius: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-md);
+    align-items: center;
+}
+.search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+.search-input {
+    width: 100%;
+    padding: 9px 14px 9px 36px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+.search-input:focus { outline: none; border-color: var(--c-primary); }
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 14px;
+    pointer-events: none;
+}
+.search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-surface-3);
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 12px;
+    display: none;
+}
+.search-clear.visible { display: inline-flex; align-items: center; justify-content: center; }
+
+.btn {
+    border: none;
+    background: var(--bg-surface-3);
+    color: var(--c-primary-dark);
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+[data-theme="dark"] .btn { color: var(--text-primary); }
+.btn:hover { background: var(--border); }
+.btn.primary { background: linear-gradient(135deg, var(--c-primary), #2E5BBA); color: white; }
+.btn.primary:hover { box-shadow: 0 4px 12px rgba(1,102,179,0.4); transform: translateY(-1px); }
+.btn.success { background: #16a34a; color: white; }
+.btn.warn { background: var(--c-orange); color: white; }
+.btn.danger { background: #ef4444; color: white; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.sm { padding: 6px 10px; font-size: 12px; }
+
+/* ============================================
+   TABS
+============================================ */
+.tabs {
+    max-width: 1480px;
+    margin: 0 auto 22px;
+    background: var(--bg-surface);
+    padding: 8px;
+    border-radius: 16px;
+    display: flex;
+    gap: 4px;
+    box-shadow: var(--shadow-lg);
+    flex-wrap: wrap;
+}
+.tabs .btn.tab {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 14px;
+    font-size: 13px;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+}
+.tabs .btn.tab.active { background: linear-gradient(135deg, var(--c-primary), #2E5BBA); color: white; }
+.tabs .btn.tab:hover:not(.active) { background: var(--bg-surface-3); color: var(--text-primary); }
+.more-tab-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+}
+.more-tab-wrap .btn.tab.more-tab { flex: 1; }
+.more-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--bg-surface);
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.22);
+    padding: 6px;
+    z-index: 40;
+    min-width: 200px;
+    border: 1px solid var(--border);
+    display: none;
+}
+.more-menu.open { display: block; animation: fade-in 0.15s ease-out; }
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.more-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+}
+.more-menu-item:hover {
+    background: var(--bg-surface-2);
+    color: var(--c-primary);
+}
+.more-menu-item.active {
+    background: linear-gradient(135deg, var(--c-primary), #2E5BBA);
+    color: white;
+}
+
+/* ============================================
+   VIEWS
+============================================ */
+.view {
+    display: none;
+    max-width: 1480px;
+    margin: 0 auto;
+}
+.view.active { display: block; }
+
+/* ============================================
+   KANBAN
+============================================ */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(260px, 1fr));
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+}
+.kanban-column {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: var(--shadow-lg);
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+}
+.kanban-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+}
+.kanban-column-header.backlog { background: var(--st-backlog); }
+.kanban-column-header.todo { background: var(--st-todo); }
+.kanban-column-header.doing { background: var(--st-doing); }
+.kanban-column-header.review { background: var(--st-review); }
+.kanban-column-header.done { background: var(--st-done); }
+.kanban-column-title { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.3px; }
+.kanban-column-count {
+    background: rgba(255,255,255,0.3);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.kanban-list {
+    flex: 1;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+.kanban-add {
+    background: transparent;
+    border: 2px dashed var(--border);
+    color: var(--text-muted);
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 8px;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+.kanban-add:hover {
+    border-color: var(--c-primary);
+    color: var(--c-primary);
+    background: rgba(1,102,179,0.05);
+}
+
+/* ============================================
+   TASK CARD
+============================================ */
+.task-card {
+    background: var(--bg-surface-2);
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 4px solid var(--c-primary);
+    position: relative;
+}
+.task-card:hover {
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+.task-card.sortable-ghost { opacity: 0.4; background: var(--c-primary); }
+.task-card.sortable-drag { transform: rotate(2deg); }
+.task-card.concluida { opacity: 0.7; }
+.task-card.concluida .task-titulo { text-decoration: line-through; color: var(--text-muted); }
+
+.task-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 6px;
+}
+.task-id {
+    background: var(--c-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.task-prio {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: white;
+}
+.task-prio.baixa { background: var(--pr-baixa); }
+.task-prio.media { background: var(--pr-media); }
+.task-prio.alta { background: var(--pr-alta); }
+.task-prio.urgente { background: var(--pr-urgente); }
+
+.task-titulo {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.task-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.task-tag {
+    background: var(--bg-surface-3);
+    color: var(--text-secondary);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.task-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.task-assignee {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.task-assignee .avatar-mini {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    border: 2px solid var(--bg-surface);
+}
+.task-assignee.unassigned .avatar-mini {
+    background: var(--border);
+    color: var(--text-muted);
+}
+
+.task-prazo {
+    padding: 1px 7px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.task-prazo.ok { background: #dcfce7; color: #16a34a; }
+.task-prazo.warn { background: #fef3c7; color: #b45309; }
+.task-prazo.late { background: #fee2e2; color: #dc2626; }
+[data-theme="dark"] .task-prazo.ok { background: #052e1a; }
+[data-theme="dark"] .task-prazo.warn { background: #3a2c0d; }
+[data-theme="dark"] .task-prazo.late { background: #4c1d1d; }
+
+.task-meta-icons {
+    display: flex;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+.task-meta-icons span { display: inline-flex; align-items: center; gap: 2px; }
+
+/* ============================================
+   CALENDÁRIO (cards por dia)
+============================================ */
+.semana-separator {
+    grid-column: 1 / -1;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 16px;
+    padding: 14px 22px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border-left: 6px solid var(--c-orange);
+    margin-top: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.semana-progress {
+    font-family: var(--font-body);
+    font-size: 12px;
+    background: rgba(0,0,0,0.18);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+}
+.dia-card {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: var(--shadow-lg);
+    border-left: 6px solid var(--c-primary);
+}
+.dia-card.hoje { box-shadow: 0 0 0 2px var(--c-orange), var(--shadow-lg); }
+.dia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+}
+.dia-numero {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--c-primary);
+}
+.dia-data { font-size: 12px; color: var(--text-muted); margin-top: 2px; font-weight: 600; }
+.dia-count {
+    background: var(--c-primary);
+    color: white;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* ============================================
+   CALENDÁRIO MENSAL
+============================================ */
+.month-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: var(--bg-surface);
+    padding: 12px 18px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+.month-nav h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--c-primary-dark);
+    text-transform: uppercase;
+}
+[data-theme="dark"] .month-nav h2 { color: var(--text-primary); }
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    background: var(--bg-surface);
+    padding: 12px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+}
+.month-day-header {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--text-muted);
+    padding: 6px;
+    letter-spacing: 0.5px;
+}
+.month-day {
+    background: var(--bg-surface-2);
+    border-radius: 10px;
+    padding: 8px;
+    min-height: 110px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.month-day:hover { border-color: var(--c-primary); }
+.month-day.other-month { opacity: 0.35; }
+.month-day.today { border-color: var(--c-orange); background: rgba(243,146,8,0.08); }
+.month-day.weekend { background: var(--bg-surface-3); }
+.month-day-num {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--text-primary);
+}
+.month-day.today .month-day-num { color: var(--c-orange); }
+.month-day-pill {
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.month-day-more {
+    background: var(--text-muted);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    text-align: center;
+}
+
+/* ============================================
+   MINHA LISTA
+============================================ */
+.minhas-section {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+}
+.minhas-section h2 {
+    font-family: var(--font-display);
+    color: var(--c-primary);
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+.minha-tarefa {
+    padding: 14px;
+    background: var(--bg-surface-2);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--c-primary);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.minha-tarefa:hover { transform: translateX(4px); }
+.minha-tarefa.concluida { opacity: 0.6; border-left-color: #16a34a; }
+.minha-tarefa-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+.minha-tarefa-titulo { font-weight: 600; font-size: 14px; }
+
+/* ============================================
+   SETTINGS
+============================================ */
+.settings-section {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 20px;
+}
+.settings-section h2 {
+    font-family: var(--font-display);
+    color: var(--c-primary);
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+.settings-section p.helper {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+.users-list { margin-top: 16px; }
+.user-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 100px 100px 80px;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-surface-2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+.user-row .avatar-lg {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+.user-row .user-name { font-weight: 600; font-size: 14px; }
+.user-row .user-email { font-size: 12px; color: var(--text-muted); }
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    text-align: center;
+}
+.role-badge.superadmin { background: #7c3aed; }
+.role-badge.editor { background: var(--c-primary); }
+.role-badge.viewer { background: var(--text-muted); }
+
+/* ============================================
+   MODAL
+============================================ */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-radius: 20px;
+    max-width: 720px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+}
+.modal.small { max-width: 480px; }
+.modal.wide { max-width: 900px; }
+.modal-header {
+    background: linear-gradient(135deg, var(--c-primary-dark), var(--c-primary));
+    color: white;
+    padding: 22px 24px;
+    border-radius: 20px 20px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.modal-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+.modal-id {
+    background: var(--c-orange);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+}
+.modal-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+}
+.modal-close:hover { background: rgba(255,255,255,0.35); }
+.modal-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    margin: 10px 0 8px;
+    line-height: 1.2;
+}
+.modal-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; opacity: 0.9; }
+.modal-body { padding: 24px; }
+.modal-actions {
+    padding: 16px 24px;
+    background: var(--bg-surface-2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    border-radius: 0 0 20px 20px;
+    flex-wrap: wrap;
+}
+.modal-field { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
+.modal-field:last-child { border-bottom: none; }
+.modal-field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--c-primary);
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.modal-field-value { font-size: 14px; color: var(--text-primary); line-height: 1.6; }
+
+/* Subtarefas */
+.subtarefas-list { margin-top: 8px; }
+.subtarefa-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--bg-surface-2);
+    margin-bottom: 4px;
+    transition: background 0.15s;
+}
+.subtarefa-item:hover { background: var(--bg-surface-3); }
+.subtarefa-item input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: #16a34a;
+    cursor: pointer;
+}
+.subtarefa-texto { font-size: 13px; color: var(--text-primary); flex: 1; }
+.subtarefa-item.feita .subtarefa-texto {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+.subtarefa-remove {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.subtarefa-item:hover .subtarefa-remove { opacity: 1; }
+.subtarefa-remove:hover { color: #ef4444; }
+.subtarefa-add {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+.subtarefa-add input { flex: 1; }
+
+/* Comentários */
+.coments-list { margin-top: 10px; max-height: 280px; overflow-y: auto; }
+.coment {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--bg-surface-2);
+    margin-bottom: 8px;
+}
+.coment .avatar-mini {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.coment-body { flex: 1; }
+.coment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.coment-author { font-weight: 700; font-size: 13px; color: var(--text-primary); }
+.coment-time { font-size: 11px; color: var(--text-muted); }
+.coment-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; }
+.coment-input-wrap {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+}
+.coment-input-wrap textarea {
+    flex: 1;
+    min-height: 60px;
+    resize: vertical;
+}
+
+/* Atividade */
+.atividade-list { margin-top: 10px; }
+.atividade-item {
+    display: flex;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-bottom: 1px dashed var(--border-soft);
+}
+.atividade-item:last-child { border-bottom: none; }
+.atividade-item strong { color: var(--text-secondary); }
+
+/* Tags input */
+.tag-chip {
+    background: var(--bg-surface-3);
+    color: var(--text-secondary);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.tag-chip button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+}
+.tag-chip button:hover { color: #ef4444; }
+
+/* ============================================
+   FORM
+============================================ */
+.form-group { margin-bottom: 16px; }
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--c-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+.form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-input);
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--c-primary);
+}
+.form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+.form-textarea.large { min-height: 140px; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+/* ============================================
+   TOAST + EMPTY STATE
+============================================ */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+.toast {
+    background: var(--c-primary);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    animation: slide-in 0.3s ease-out;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toast.success { background: #16a34a; }
+.toast.warn { background: var(--c-orange); }
+.toast.danger { background: #ef4444; }
+@keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 50px 20px;
+    font-size: 14px;
+}
+.empty-state .emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 920px) {
+    .kanban-board { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
+@media (max-width: 768px) {
+    body { padding: 16px 12px 60px; }
+    .header h1 { font-size: 26px; }
+    .header-controls, .header-controls-left { position: static; margin-bottom: 12px; display: flex; justify-content: center; flex-wrap: wrap; }
+    .tabs { flex-direction: column; }
+    .tabs .btn.tab { min-width: auto; }
+    .toolbar { flex-direction: column; }
+    .toolbar .search-wrap { width: 100%; }
+    .month-day { min-height: 70px; }
+    .form-row { flex-direction: column; gap: 0; }
+    .user-row { grid-template-columns: 36px 1fr 90px; }
+    .user-row > *:nth-child(4), .user-row > *:nth-child(5) { display: none; }
+    .calendar-grid { grid-template-columns: 1fr; }
+}
+
+footer {
+    max-width: 1480px;
+    margin: 40px auto 0;
+    padding: 24px;
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+}
+footer strong { color: white; }
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+    <div class="login-card">
+        <div class="login-logo">
+            <span class="hxc-logo size-md">
+                <span class="hxc-hxc">Hxc</span><span class="hxc-tasks">Tasks</span>
+            </span>
+        </div>
+        <h1>Gestão de Demandas</h1>
+        <p class="login-subtitle">Acesso interno · HXC Tech</p>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" style="color:var(--text-secondary)">Usuário ou e-mail</label>
+                <input type="text" id="login-user" class="form-input" placeholder="seu e-mail" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="color:var(--text-secondary)">Senha</label>
+                <input type="password" id="login-pwd" class="form-input" placeholder="Senha" autocomplete="current-password">
+            </div>
+            <div id="login-error" class="login-error"></div>
+            <button type="submit" class="btn primary">Entrar →</button>
+        </form>
+        <div class="login-help">
+            Modo local sem Supabase configurado: use <kbd>admin</kbd> / <kbd>hxc-tasks-2026</kbd> pra testar.<br>
+            <div style="display:flex;gap:6px;margin-top:10px;justify-content:center;flex-wrap:wrap">
+                <button type="button" class="btn sm" onclick="preencherLoginExemplo('superadmin')">Admin</button>
+                <button type="button" class="btn sm" onclick="preencherLoginExemplo('editor')">Editor</button>
+                <button type="button" class="btn sm" onclick="preencherLoginExemplo('viewer')">Viewer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" hidden>
+<header class="header">
+    <div class="header-controls-left">
+        <div id="save-status" class="user-chip"><span class="avatar">?</span> Carregando...</div>
+        <div id="conn-status" class="conn-status local">💾 Modo local</div>
+    </div>
+    <div class="header-controls">
+        <button id="theme-toggle" class="icon-toggle" onclick="alternarTema()" title="Alternar tema (T)">🌙</button>
+        <button class="icon-toggle" onclick="trocarVista('settings')" title="Configurações">⚙️</button>
+    </div>
+
+    <div class="brand-pill" style="margin-bottom:18px">
+        <span class="hxc-logo size-sm">
+            <span class="hxc-hxc">Hxc</span><span class="hxc-tasks">Tasks</span>
+        </span>
+    </div>
+
+    <h1>Gestão de Demandas</h1>
+    <p class="subtitle">Time HXC Tech · tarefas, prazos, prioridades em tempo real</p>
+
+    <div class="stats">
+        <div class="stat"><span class="stat-value" id="stat-total">0</span><span class="stat-label">Total</span></div>
+        <div class="stat"><span class="stat-value" id="stat-andamento">0</span><span class="stat-label">Em andamento</span></div>
+        <div class="stat"><span class="stat-value" id="stat-revisao">0</span><span class="stat-label">Em revisão</span></div>
+        <div class="stat"><span class="stat-value" id="stat-concluidas">0</span><span class="stat-label">Concluídas</span></div>
+        <div class="stat" style="background:rgba(239,68,68,0.2)"><span class="stat-value" id="stat-urgentes">0</span><span class="stat-label">Urgentes</span></div>
+        <div class="stat" style="background:rgba(245,158,11,0.2)"><span class="stat-value" id="stat-atrasadas">0</span><span class="stat-label">Atrasadas</span></div>
+    </div>
+</header>
+
+<div class="toolbar">
+    <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar tarefas (atalho: /)" autocomplete="off">
+        <button id="search-clear" class="search-clear" title="Limpar busca">✕</button>
+    </div>
+    <div id="toolbar-actions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+</div>
+
+<div class="tabs">
+    <button class="btn tab active" data-vista="kanban" onclick="trocarVista('kanban')">📋 Kanban</button>
+    <button class="btn tab" data-vista="calendario" onclick="trocarVista('calendario')">📅 Calendário</button>
+    <button class="btn tab" data-vista="mensal" onclick="trocarVista('mensal')">🗓️ Mensal</button>
+    <button class="btn tab" data-vista="minhas" onclick="trocarVista('minhas')">👤 Minhas</button>
+    <div class="more-tab-wrap">
+        <button class="btn tab more-tab" onclick="toggleMoreMenu(event)">⋯ Mais</button>
+        <div id="more-menu" class="more-menu">
+            <button class="more-menu-item" data-vista="settings" onclick="trocarVistaFromMenu('settings', event)">⚙️ Configurações</button>
+        </div>
+    </div>
+</div>
+
+<div id="view-kanban" class="view active"></div>
+<div id="view-calendario" class="view"></div>
+<div id="view-mensal" class="view"></div>
+<div id="view-minhas" class="view"></div>
+<div id="view-settings" class="view"></div>
+
+<footer>
+    <p><strong>HXC Tasks</strong> · Criado por HXC Tech</p>
+</footer>
+</div>
+
+<div id="modal-overlay" class="modal-overlay">
+    <div id="modal" class="modal"></div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+window.EXPORTED_DATA = null;
+</script>
+<script>
+/* ============================================
+   HXC TASKS · v1 · Application Logic
+   ============================================ */
+
+'use strict';
+
+// ============================================
+// SUPABASE DETECTION
+// ============================================
+const MODO_NUVEM = !window.SUPABASE_CONFIG.url.includes('YOUR_PROJECT')
+    && !window.SUPABASE_CONFIG.anonKey.includes('YOUR_ANON_KEY')
+    && typeof window.supabase !== 'undefined';
+
+let sb = null;
+if (MODO_NUVEM) {
+    sb = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+    });
+    console.log('[HXC Tasks] Modo nuvem ativo · Supabase conectado');
+} else {
+    console.warn('[HXC Tasks] Modo LOCAL · sem Supabase configurado');
+}
+
+// ============================================
+// CONSTANTS
+// ============================================
+const APP_VERSION = '1.0.0';
+const STORAGE_KEY = 'hxc_tasks_v1';
+const SESSION_KEY = 'hxc_tasks_session_v1';
+const THEME_KEY = 'hxc_tasks_theme';
+
+const STATUSES = ['Backlog', 'A fazer', 'Fazendo', 'Em revisão', 'Concluída'];
+const STATUS_CLASS = {
+    'Backlog': 'backlog',
+    'A fazer': 'todo',
+    'Fazendo': 'doing',
+    'Em revisão': 'review',
+    'Concluída': 'done'
+};
+const STATUS_EMOJI = {
+    'Backlog': '📥',
+    'A fazer': '📋',
+    'Fazendo': '⚡',
+    'Em revisão': '👀',
+    'Concluída': '✅'
+};
+
+const PRIORITIES = ['Baixa', 'Média', 'Alta', 'Urgente'];
+const PRIORITY_CLASS = { 'Baixa': 'baixa', 'Média': 'media', 'Alta': 'alta', 'Urgente': 'urgente' };
+const PRIORITY_EMOJI = { 'Baixa': '🔵', 'Média': '⚪', 'Alta': '🟠', 'Urgente': '🔴' };
+
+const USERS_DEFAULT = [
+    { id: 'u-admin', nome: 'Admin', email: 'admin@hxctech', role: 'superadmin', avatar: 'AD', senha_default: 'hxc-tasks-2026' },
+    { id: 'u-editor', nome: 'Editor', email: 'editor@hxctech', role: 'editor', avatar: 'ED', senha_default: 'hxc-tasks-2026' },
+    { id: 'u-viewer', nome: 'Viewer', email: 'viewer@hxctech', role: 'viewer', avatar: 'VW', senha_default: 'hxc-tasks-2026' }
+];
+const ROLE_LABELS = { superadmin: 'Super Admin', editor: 'Editor', viewer: 'Viewer' };
+const PERMS = {
+    superadmin: { read: true, write: true, deleteAll: true, manageUsers: true },
+    editor: { read: true, write: true, deleteAll: false, manageUsers: false },
+    viewer: { read: true, write: false, deleteAll: false, manageUsers: false }
+};
+
+const TAREFAS_SEED = [
+    { id: 'T01', titulo: 'Bem-vindo ao HXC Tasks!', descricao: 'Esta é uma tarefa de exemplo. Arraste, edite, ou exclua. Use os 5 status (Backlog → Concluída) pra mover suas tarefas pelo fluxo.', status: 'A fazer', prioridade: 'Média', tags: ['onboarding','exemplo'], subtarefas: [{ texto: 'Explorar todas as 5 colunas', feito: false },{ texto: 'Criar minha primeira tarefa real', feito: false },{ texto: 'Atribuir um responsável', feito: false }], anexos: [], concluida: false },
+    { id: 'T02', titulo: 'Configurar o time inicial', descricao: 'Crie os usuários reais da equipe no painel Auth do Supabase e atribua roles (editor/viewer).', status: 'Backlog', prioridade: 'Alta', tags: ['setup','admin'], subtarefas: [], anexos: [], concluida: false },
+    { id: 'T03', titulo: 'Definir tags padrão do time', descricao: 'Combinem que tags usar: ex. tech, design, comercial, urgente, bug, melhoria.', status: 'Backlog', prioridade: 'Baixa', tags: ['setup','time'], subtarefas: [], anexos: [], concluida: false }
+];
+
+async function sha256(text) {
+    const buf = new TextEncoder().encode(text);
+    const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ============================================
+// STATE
+// ============================================
+const estado = {
+    tarefas: [],
+    comentarios: {},   // {tarefa_id: [coments]}
+    atividade: {},     // {tarefa_id: [acoes]}
+    usuarios: [],
+    usuario_logado: null,
+    versao: APP_VERSION,
+    vista_atual: 'kanban',
+    tarefaModalId: null,
+    filtros: { busca: '' },
+    month_view_date: new Date(),
+    theme: 'light'
+};
+
+// ============================================
+// UTILITIES
+// ============================================
+function escapar(t) {
+    if (t === null || t === undefined) return '';
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function escaparAttr(t) {
+    if (t === null || t === undefined) return '';
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function gerarIdTarefa() {
+    let n = estado.tarefas.length + 1;
+    while (estado.tarefas.find(x => x.id === 'T' + String(n).padStart(2,'0'))) n++;
+    return 'T' + String(n).padStart(2,'0');
+}
+function fmtDateBR(d) {
+    return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+}
+function parseDateISO(s) {
+    if (!s) return null;
+    if (s instanceof Date) return s;
+    const d = new Date(s);
+    return isNaN(d) ? null : d;
+}
+function isoToBR(s) {
+    const d = parseDateISO(s);
+    return d ? fmtDateBR(d) : '';
+}
+function brToIso(s) {
+    if (!s) return null;
+    const m = String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!m) return null;
+    return `${m[3]}-${m[2]}-${m[1]}`;
+}
+function diasEntre(a, b) {
+    if (!a || !b) return null;
+    const aDate = a instanceof Date ? a : parseDateISO(a);
+    const bDate = b instanceof Date ? b : parseDateISO(b);
+    if (!aDate || !bDate) return null;
+    const aCopy = new Date(aDate.getTime()); aCopy.setHours(0,0,0,0);
+    const bCopy = new Date(bDate.getTime()); bCopy.setHours(0,0,0,0);
+    return Math.round((bCopy - aCopy) / 86400000);
+}
+function avatarFromName(nome) {
+    if (!nome) return '?';
+    const parts = nome.trim().split(' ').filter(Boolean);
+    if (parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+}
+function hashCor(str) {
+    // Gera cor consistente baseada em string (pra tags e avatars)
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+    const hue = Math.abs(h) % 360;
+    return `hsl(${hue}, 65%, 55%)`;
+}
+
+// ============================================
+// PERSISTENCE
+// ============================================
+function salvar() {
+    try {
+        const dados = {
+            tarefas: estado.tarefas,
+            comentarios: estado.comentarios,
+            atividade: estado.atividade,
+            usuarios: estado.usuarios,
+            versao: APP_VERSION
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+        atualizarStatusSalvo();
+        return true;
+    } catch (e) { console.error('Erro salvar:', e); return false; }
+}
+
+async function dbUpsertTarefa(t) {
+    salvar();
+    if (!MODO_NUVEM || !sb) return { ok: true };
+    const payload = sanitizar(t);
+    const { error } = await sb.from('tarefas').upsert(payload);
+    if (error) { console.error('upsert:', error); toast('Erro salvar: '+error.message, 'danger'); return { ok: false }; }
+    return { ok: true };
+}
+async function dbDeleteTarefa(id) {
+    salvar();
+    if (!MODO_NUVEM || !sb) return { ok: true };
+    const { error } = await sb.from('tarefas').delete().eq('id', id);
+    if (error) { toast('Erro: '+error.message, 'danger'); return { ok: false }; }
+    return { ok: true };
+}
+async function dbInsertComentario(c) {
+    if (!MODO_NUVEM || !sb) return { ok: true };
+    const { error, data } = await sb.from('tarefa_comentarios').insert({
+        tarefa_id: c.tarefa_id, autor_id: c.autor_id, texto: c.texto
+    }).select().single();
+    if (error) { toast('Erro: '+error.message, 'danger'); return { ok: false }; }
+    return { ok: true, data };
+}
+
+function sanitizar(t) {
+    return {
+        id: t.id,
+        titulo: t.titulo || '',
+        descricao: t.descricao || null,
+        status: t.status || 'Backlog',
+        prioridade: t.prioridade || 'Média',
+        responsavel_id: t.responsavel_id || null,
+        prazo: t.prazo || null,
+        tags: t.tags || [],
+        subtarefas: t.subtarefas || [],
+        anexos: t.anexos || [],
+        ordem: t.ordem || 0,
+        concluida: !!t.concluida
+    };
+}
+
+async function carregar() {
+    if (MODO_NUVEM && sb && estado.usuario_logado) {
+        setStatusConexao('syncing');
+        try {
+            const [tResp, uResp] = await Promise.all([
+                sb.from('tarefas').select('*').order('ordem'),
+                sb.from('app_users').select('*').order('role')
+            ]);
+            for (const r of [tResp, uResp]) if (r.error) throw r.error;
+            estado.tarefas = (tResp.data || []).map(migrarTarefa);
+            estado.usuarios = (uResp.data || []).map(u => ({
+                id: u.id, nome: u.nome, email: u.email, avatar: u.avatar, role: u.role, ativo: u.ativo
+            }));
+            salvar();
+            setStatusConexao('online');
+            return 'nuvem';
+        } catch (e) {
+            console.error('Erro Supabase:', e);
+            setStatusConexao('offline');
+            toast('Sem conexão. Usando cache local.', 'warn');
+        }
+    }
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed.tarefas)) {
+                estado.tarefas = parsed.tarefas.map(migrarTarefa);
+                estado.comentarios = parsed.comentarios || {};
+                estado.atividade = parsed.atividade || {};
+                estado.usuarios = parsed.usuarios || JSON.parse(JSON.stringify(USERS_DEFAULT));
+                setStatusConexao(MODO_NUVEM ? 'offline' : 'local');
+                return 'cache';
+            }
+        }
+    } catch (e) { console.error(e); }
+    estado.tarefas = JSON.parse(JSON.stringify(TAREFAS_SEED)).map(migrarTarefa);
+    estado.comentarios = {};
+    estado.atividade = {};
+    estado.usuarios = JSON.parse(JSON.stringify(USERS_DEFAULT));
+    setStatusConexao(MODO_NUVEM ? 'offline' : 'local');
+    return 'seed';
+}
+
+function migrarTarefa(t) {
+    if (!t.subtarefas) t.subtarefas = [];
+    if (!t.tags) t.tags = [];
+    if (!t.anexos) t.anexos = [];
+    if (!t.status) t.status = 'Backlog';
+    if (!t.prioridade) t.prioridade = 'Média';
+    if (typeof t.concluida !== 'boolean') t.concluida = false;
+    return t;
+}
+
+// ============================================
+// REALTIME
+// ============================================
+let _realtimeChannel = null;
+function inscreverRealtime() {
+    if (!MODO_NUVEM || !sb || _realtimeChannel) return;
+    _realtimeChannel = sb.channel('hxc_tasks_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tarefas' }, p => onRTC('tarefas', p))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tarefa_comentarios' }, p => onRTC('coments', p))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tarefa_atividade' }, p => onRTC('atividade', p))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'app_users' }, p => onRTC('users', p))
+        .subscribe(status => { if (status === 'SUBSCRIBED') setStatusConexao('online'); });
+}
+function desinscreverRealtime() {
+    if (_realtimeChannel && sb) { sb.removeChannel(_realtimeChannel); _realtimeChannel = null; }
+}
+function onRTC(tabela, payload) {
+    const { eventType, new: novo, old: antigo } = payload;
+    if (tabela === 'tarefas') {
+        if (eventType === 'DELETE') {
+            estado.tarefas = estado.tarefas.filter(x => x.id !== antigo.id);
+        } else {
+            const idx = estado.tarefas.findIndex(x => x.id === novo.id);
+            const t = migrarTarefa({ ...novo });
+            if (idx === -1) estado.tarefas.push(t); else estado.tarefas[idx] = t;
+        }
+    } else if (tabela === 'coments') {
+        if (eventType === 'INSERT' && novo) {
+            const tid = novo.tarefa_id;
+            if (!estado.comentarios[tid]) estado.comentarios[tid] = [];
+            if (!estado.comentarios[tid].find(c => c._id === novo.id)) {
+                estado.comentarios[tid].push({
+                    _id: novo.id, autor_id: novo.autor_id, texto: novo.texto, created_at: novo.created_at
+                });
+            }
+        }
+    } else if (tabela === 'atividade') {
+        if (eventType === 'INSERT' && novo) {
+            const tid = novo.tarefa_id;
+            if (!estado.atividade[tid]) estado.atividade[tid] = [];
+            estado.atividade[tid].unshift({
+                _id: novo.id, autor_id: novo.autor_id, acao: novo.acao,
+                de: novo.de, para: novo.para, created_at: novo.created_at
+            });
+        }
+    } else if (tabela === 'users') {
+        if (eventType === 'DELETE') estado.usuarios = estado.usuarios.filter(x => x.id !== antigo.id);
+        else {
+            const idx = estado.usuarios.findIndex(x => x.id === novo.id);
+            if (idx === -1) estado.usuarios.push(novo); else estado.usuarios[idx] = novo;
+        }
+    }
+    salvar();
+    renderTudo();
+}
+
+// ============================================
+// AUTH
+// ============================================
+async function tentarLogin(usuarioOuEmail, senha) {
+    const target = (usuarioOuEmail || '').trim();
+    if (MODO_NUVEM && sb) {
+        const { data, error } = await sb.auth.signInWithPassword({ email: target, password: senha });
+        if (error) return { ok: false, msg: traduzirErro(error) };
+        const { data: perfil } = await sb.from('app_users').select('*').eq('id', data.user.id).single();
+        if (!perfil) return { ok: false, msg: 'Perfil não encontrado' };
+        estado.usuario_logado = perfil;
+        return { ok: true, usuario: perfil };
+    }
+    // LOCAL
+    const SHORT = { superadmin: 'admin@hxctech', admin: 'admin@hxctech', editor: 'editor@hxctech', viewer: 'viewer@hxctech' };
+    const tgt = (SHORT[target.toLowerCase()] || target).toLowerCase();
+    const u = estado.usuarios.find(x =>
+        x.email.toLowerCase() === tgt || x.role.toLowerCase() === target.toLowerCase()
+    );
+    if (!u) return { ok: false, msg: 'Usuário não encontrado' };
+    const hash = await sha256(senha);
+    if (!u.hash) {
+        // primeira vez no modo local, calcula da senha-padrão
+        if (u.senha_default && hash === await sha256(u.senha_default)) {
+            u.hash = hash;
+            salvar();
+        } else {
+            return { ok: false, msg: 'Senha incorreta' };
+        }
+    } else if (u.hash !== hash) {
+        return { ok: false, msg: 'Senha incorreta' };
+    }
+    estado.usuario_logado = u;
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id: u.id, ts: Date.now() }));
+    return { ok: true, usuario: u };
+}
+function traduzirErro(err) {
+    const m = (err.message || '').toLowerCase();
+    if (m.includes('invalid login')) return 'E-mail ou senha incorretos';
+    if (m.includes('email not confirmed')) return 'E-mail não confirmado';
+    if (m.includes('network') || m.includes('fetch')) return 'Sem conexão';
+    return err.message || 'Erro desconhecido';
+}
+async function tryRestoreSession() {
+    if (MODO_NUVEM && sb) {
+        const { data } = await sb.auth.getSession();
+        if (!data.session) return false;
+        const { data: perfil } = await sb.from('app_users').select('*').eq('id', data.session.user.id).single();
+        if (!perfil) return false;
+        estado.usuario_logado = perfil;
+        return true;
+    }
+    try {
+        const raw = sessionStorage.getItem(SESSION_KEY);
+        if (!raw) return false;
+        const s = JSON.parse(raw);
+        const u = estado.usuarios.find(x => x.id === s.id);
+        if (!u || Date.now() - s.ts > 12*3600*1000) return false;
+        estado.usuario_logado = u;
+        return true;
+    } catch (e) { return false; }
+}
+async function logout() {
+    if (MODO_NUVEM && sb) await sb.auth.signOut();
+    sessionStorage.removeItem(SESSION_KEY);
+    estado.usuario_logado = null;
+    desinscreverRealtime();
+    mostrarLogin();
+}
+function podeEditar() { return estado.usuario_logado && PERMS[estado.usuario_logado.role].write; }
+function podeExcluirTudo() { return estado.usuario_logado && PERMS[estado.usuario_logado.role].deleteAll; }
+function podeExcluirTarefa(t) {
+    if (!estado.usuario_logado) return false;
+    if (PERMS[estado.usuario_logado.role].deleteAll) return true;
+    if (PERMS[estado.usuario_logado.role].write && t.criado_por === estado.usuario_logado.id) return true;
+    return false;
+}
+function podeGerenciar() { return estado.usuario_logado && PERMS[estado.usuario_logado.role].manageUsers; }
+
+function mostrarLogin() {
+    document.body.classList.add('login-mode');
+    document.getElementById('app').hidden = true;
+    document.getElementById('login-screen').hidden = false;
+    setTimeout(() => { document.getElementById('login-user')?.focus(); }, 100);
+}
+async function entrarNoApp() {
+    document.body.classList.remove('login-mode');
+    document.getElementById('login-screen').hidden = true;
+    document.getElementById('app').hidden = false;
+    atualizarStatusSalvo();
+    if (MODO_NUVEM && sb) {
+        await carregar();
+        inscreverRealtime();
+    }
+    renderTudo();
+}
+async function handleLogin(ev) {
+    if (ev) ev.preventDefault();
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pwd').value;
+    const eb = document.getElementById('login-error');
+    if (!u || !p) { eb.textContent = 'Informe usuário e senha'; eb.classList.add('active'); return; }
+    const r = await tentarLogin(u, p);
+    if (!r.ok) { eb.textContent = r.msg; eb.classList.add('active'); return; }
+    eb.classList.remove('active');
+    document.getElementById('login-pwd').value = '';
+    await entrarNoApp();
+    toast(`Bem-vindo, ${r.usuario.nome.split(' ')[0]}!`, 'success');
+}
+function preencherLoginExemplo(role) {
+    const map = { superadmin: 'admin', editor: 'editor', viewer: 'viewer' };
+    document.getElementById('login-user').value = map[role] || role;
+    document.getElementById('login-pwd').value = 'hxc-tasks-2026';
+    document.getElementById('login-pwd').focus();
+}
+
+function setStatusConexao(s) {
+    const el = document.getElementById('conn-status');
+    if (!el) return;
+    el.className = 'conn-status ' + s;
+    const labels = {
+        online: '🟢 Sincronizado',
+        syncing: '🔄 Sincronizando...',
+        offline: '⚠️ Offline · cache',
+        local: '💾 Modo local',
+        error: '❌ Erro'
+    };
+    el.textContent = labels[s] || s;
+}
+function atualizarStatusSalvo() {
+    const el = document.getElementById('save-status');
+    if (!el || !estado.usuario_logado) return;
+    const u = estado.usuario_logado;
+    el.innerHTML = `<span class="avatar" style="background:${u.cor || hashCor(u.id)}">${escaparAttr(u.avatar || avatarFromName(u.nome))}</span> ${escapar(u.nome)} <span class="role-tag">${ROLE_LABELS[u.role]}</span>`;
+}
+
+// ============================================
+// THEME
+// ============================================
+function aplicarTema(t) {
+    estado.theme = t;
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem(THEME_KEY, t);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+}
+function alternarTema() { aplicarTema(estado.theme === 'dark' ? 'light' : 'dark'); }
+function carregarTema() { aplicarTema(localStorage.getItem(THEME_KEY) || 'light'); }
+
+// ============================================
+// TOAST + MODAL
+// ============================================
+function toast(msg, tipo = '') {
+    const c = document.getElementById('toast-container');
+    if (!c) { console.log(msg); return; }
+    const el = document.createElement('div');
+    el.className = 'toast ' + (tipo || '');
+    el.textContent = msg;
+    c.appendChild(el);
+    setTimeout(() => {
+        el.style.transition = 'opacity 0.3s, transform 0.3s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(20px)';
+        setTimeout(() => el.remove(), 300);
+    }, 3000);
+}
+function abrirModal(html, tipo='') {
+    const overlay = document.getElementById('modal-overlay');
+    const modal = document.getElementById('modal');
+    modal.className = 'modal ' + tipo;
+    modal.innerHTML = html;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function fecharModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    estado.tarefaModalId = null;
+}
+
+// ============================================
+// FILTRAGEM (busca simples)
+// ============================================
+function tarefasFiltradas() {
+    const q = estado.filtros.busca?.toLowerCase();
+    if (!q) return estado.tarefas;
+    return estado.tarefas.filter(t => {
+        const haystack = [t.id, t.titulo, t.descricao, (t.tags||[]).join(' '), t.prioridade, t.status].join(' ').toLowerCase();
+        return haystack.includes(q);
+    });
+}
+
+// ============================================
+// RENDER
+// ============================================
+function renderTudo() {
+    renderToolbar();
+    renderStats();
+    renderKanban();
+    renderCalendario();
+    renderMensal();
+    renderMinhas();
+    renderSettings();
+}
+
+function renderToolbar() {
+    const tb = document.getElementById('toolbar-actions');
+    if (!tb) return;
+    if (podeEditar()) {
+        tb.innerHTML = `
+            <button class="btn primary" onclick="abrirNovaTarefa()" title="Nova tarefa (N)">➕ Nova tarefa</button>
+            <button class="btn danger sm" onclick="logout()" title="Sair">🚪 Sair</button>
+        `;
+    } else {
+        tb.innerHTML = `<button class="btn danger sm" onclick="logout()">🚪 Sair</button>`;
+    }
+}
+
+function renderStats() {
+    const ts = tarefasFiltradas();
+    const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setText('stat-total', ts.length);
+    setText('stat-andamento', ts.filter(t => t.status === 'Fazendo').length);
+    setText('stat-revisao', ts.filter(t => t.status === 'Em revisão').length);
+    setText('stat-concluidas', ts.filter(t => t.status === 'Concluída').length);
+    setText('stat-urgentes', ts.filter(t => t.prioridade === 'Urgente' && t.status !== 'Concluída').length);
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const atrasadas = ts.filter(t => {
+        if (t.status === 'Concluída' || !t.prazo) return false;
+        const p = parseDateISO(t.prazo);
+        return p && p < hoje;
+    });
+    setText('stat-atrasadas', atrasadas.length);
+}
+
+// ============================================
+// KANBAN
+// ============================================
+function renderKanban() {
+    const cont = document.getElementById('view-kanban');
+    if (!cont) return;
+    const ts = tarefasFiltradas();
+    let html = '<div class="kanban-board">';
+    STATUSES.forEach(status => {
+        const tasks = ts.filter(t => t.status === status);
+        const cls = STATUS_CLASS[status];
+        html += `
+        <div class="kanban-column">
+            <div class="kanban-column-header ${cls}">
+                <span class="kanban-column-title">${STATUS_EMOJI[status]} ${escapar(status)}</span>
+                <span class="kanban-column-count">${tasks.length}</span>
+            </div>
+            <div class="kanban-list" data-status="${escaparAttr(status)}">`;
+        tasks.forEach(t => { html += renderTaskCard(t); });
+        html += `</div>`;
+        if (podeEditar()) {
+            html += `<button class="kanban-add" onclick="abrirNovaTarefaNoStatus('${escaparAttr(status)}')">➕ Nova tarefa</button>`;
+        }
+        html += `</div>`;
+    });
+    html += '</div>';
+    cont.innerHTML = html;
+
+    if (podeEditar() && typeof Sortable !== 'undefined') {
+        document.querySelectorAll('.kanban-list').forEach(list => {
+            new Sortable(list, {
+                group: 'kanban',
+                animation: 200,
+                handle: '.task-card',
+                draggable: '.task-card',
+                ghostClass: 'sortable-ghost',
+                onEnd: function(ev) {
+                    const id = ev.item.getAttribute('data-id');
+                    const novoStatus = ev.to.getAttribute('data-status');
+                    mudarStatus(id, novoStatus);
+                }
+            });
+        });
+    }
+}
+
+function renderTaskCard(t) {
+    const prio = PRIORITY_CLASS[t.prioridade] || 'media';
+    const responsavel = estado.usuarios.find(u => u.id === t.responsavel_id);
+    const avatar = responsavel
+        ? `<span class="task-assignee" title="${escaparAttr(responsavel.nome)}"><span class="avatar-mini" style="background:${responsavel.cor || hashCor(responsavel.id)}">${escapar(responsavel.avatar || avatarFromName(responsavel.nome))}</span></span>`
+        : `<span class="task-assignee unassigned" title="Sem responsável"><span class="avatar-mini">?</span></span>`;
+
+    const prazoBadge = renderPrazoBadge(t);
+    const tagsHtml = (t.tags || []).slice(0, 3).map(tag => `<span class="task-tag" style="background:${hashCor(tag)};color:white">${escapar(tag)}</span>`).join('');
+    const moreTags = (t.tags || []).length > 3 ? `<span class="task-tag">+${t.tags.length - 3}</span>` : '';
+
+    const subtarefas = t.subtarefas || [];
+    const subDone = subtarefas.filter(s => s.feito).length;
+    const coments = (estado.comentarios[t.id] || []).length;
+    const meta = [];
+    if (subtarefas.length > 0) meta.push(`<span>☑️ ${subDone}/${subtarefas.length}</span>`);
+    if (coments > 0) meta.push(`<span>💬 ${coments}</span>`);
+    if ((t.anexos || []).length > 0) meta.push(`<span>🔗 ${t.anexos.length}</span>`);
+
+    return `
+    <div class="task-card${t.concluida?' concluida':''}" data-id="${escaparAttr(t.id)}" onclick="abrirTarefa('${t.id}')">
+        <div class="task-card-top">
+            <span class="task-id">${escapar(t.id)}</span>
+            <span class="task-prio ${prio}">${PRIORITY_EMOJI[t.prioridade]} ${escapar(t.prioridade)}</span>
+        </div>
+        <div class="task-titulo">${escapar(t.titulo)}</div>
+        ${tagsHtml || moreTags ? `<div class="task-tags">${tagsHtml}${moreTags}</div>` : ''}
+        <div class="task-card-bottom">
+            <div style="display:flex;gap:8px;align-items:center">
+                ${avatar}
+                ${meta.length ? `<div class="task-meta-icons">${meta.join('')}</div>` : ''}
+            </div>
+            ${prazoBadge}
+        </div>
+    </div>`;
+}
+
+function renderPrazoBadge(t) {
+    if (!t.prazo || t.status === 'Concluída') return '';
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const dias = diasEntre(hoje, t.prazo);
+    if (dias === null) return '';
+    if (dias < 0) return `<span class="task-prazo late">${Math.abs(dias)}d atrasada</span>`;
+    if (dias === 0) return `<span class="task-prazo warn">Hoje</span>`;
+    if (dias <= 2) return `<span class="task-prazo warn">em ${dias}d</span>`;
+    if (dias <= 7) return `<span class="task-prazo ok">em ${dias}d</span>`;
+    return `<span class="task-prazo ok">${isoToBR(t.prazo)}</span>`;
+}
+
+function mudarStatus(id, novoStatus) {
+    const t = estado.tarefas.find(x => x.id === id);
+    if (!t || !novoStatus || t.status === novoStatus) return;
+    const antigo = t.status;
+    t.status = novoStatus;
+    if (novoStatus === 'Concluída') t.concluida = true;
+    if (antigo === 'Concluída' && novoStatus !== 'Concluída') t.concluida = false;
+    dbUpsertTarefa(t);
+    renderTudo();
+    toast(`${t.id} → ${novoStatus}`, 'success');
+}
+
+// ============================================
+// CALENDÁRIO (por prazo)
+// ============================================
+function renderCalendario() {
+    const cont = document.getElementById('view-calendario');
+    if (!cont) return;
+    const tsAll = tarefasFiltradas().filter(t => t.prazo);
+    if (tsAll.length === 0) {
+        cont.innerHTML = '<div class="empty-state"><span class="emoji">📅</span>Nenhuma tarefa com prazo definido ainda.</div>';
+        return;
+    }
+    const porData = {};
+    tsAll.forEach(t => {
+        const key = t.prazo;
+        if (!porData[key]) porData[key] = [];
+        porData[key].push(t);
+    });
+    const datasOrdenadas = Object.keys(porData).sort();
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+
+    let html = '<div class="calendar-grid">';
+    datasOrdenadas.forEach(iso => {
+        const d = parseDateISO(iso);
+        const ehHoje = d.getTime() === hoje.getTime();
+        const tasks = porData[iso];
+        const concluidas = tasks.filter(t => t.status === 'Concluída').length;
+        html += `<div class="dia-card ${ehHoje?'hoje':''}">
+            <div class="dia-header">
+                <div>
+                    <div class="dia-numero">${d.toLocaleDateString('pt-BR',{weekday:'long'})}</div>
+                    <div class="dia-data">${fmtDateBR(d)}</div>
+                </div>
+                <div class="dia-count">${concluidas}/${tasks.length}</div>
+            </div>`;
+        tasks.forEach(t => { html += renderTaskCard(t); });
+        html += `</div>`;
+    });
+    html += '</div>';
+    cont.innerHTML = html;
+}
+
+// ============================================
+// CALENDÁRIO MENSAL
+// ============================================
+function renderMensal() {
+    const cont = document.getElementById('view-mensal');
+    if (!cont) return;
+    const date = estado.month_view_date;
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const monthName = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startWeekday = firstDay.getDay();
+    const totalDays = lastDay.getDate();
+
+    const days = [];
+    for (let i = startWeekday - 1; i >= 0; i--) days.push({ date: new Date(year, month, -i), otherMonth: true });
+    for (let i = 1; i <= totalDays; i++) days.push({ date: new Date(year, month, i), otherMonth: false });
+    while (days.length < 42) {
+        const last = days[days.length - 1].date;
+        const next = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1);
+        days.push({ date: next, otherMonth: next.getMonth() !== month });
+    }
+
+    const ts = tarefasFiltradas().filter(t => t.prazo);
+    const porData = {};
+    ts.forEach(t => {
+        const k = t.prazo;
+        if (!porData[k]) porData[k] = [];
+        porData[k].push(t);
+    });
+
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const headers = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+    let html = `
+    <div class="month-nav">
+        <button class="btn" onclick="navegarMes(-1)">← Mês anterior</button>
+        <h2>${monthName.charAt(0).toUpperCase() + monthName.slice(1)}</h2>
+        <button class="btn" onclick="navegarMes(1)">Próximo mês →</button>
+    </div>
+    <div class="month-grid">
+        ${headers.map(h => `<div class="month-day-header">${h}</div>`).join('')}`;
+    days.forEach(d => {
+        const dIso = `${d.date.getFullYear()}-${String(d.date.getMonth()+1).padStart(2,'0')}-${String(d.date.getDate()).padStart(2,'0')}`;
+        const dTasks = porData[dIso] || [];
+        const ehHoje = d.date.getTime() === hoje.getTime();
+        const ehFds = d.date.getDay() === 0 || d.date.getDay() === 6;
+        let cls = 'month-day';
+        if (d.otherMonth) cls += ' other-month';
+        if (ehHoje) cls += ' today';
+        if (ehFds && !d.otherMonth) cls += ' weekend';
+        html += `<div class="${cls}">
+            <span class="month-day-num">${d.date.getDate()}</span>`;
+        dTasks.slice(0, 3).forEach(t => {
+            const cor = t.prioridade === 'Urgente' ? '#ef4444' : (t.prioridade === 'Alta' ? '#f97316' : 'var(--c-primary)');
+            html += `<div class="month-day-pill" style="background:${cor}" onclick="event.stopPropagation();abrirTarefa('${t.id}')" title="${escaparAttr(t.titulo)}">${escapar(t.titulo.substring(0,22))}</div>`;
+        });
+        if (dTasks.length > 3) html += `<div class="month-day-more">+${dTasks.length - 3} mais</div>`;
+        html += `</div>`;
+    });
+    html += `</div>`;
+    cont.innerHTML = html;
+}
+function navegarMes(delta) {
+    const d = estado.month_view_date;
+    estado.month_view_date = new Date(d.getFullYear(), d.getMonth() + delta, 1);
+    renderMensal();
+}
+
+// ============================================
+// MINHAS TAREFAS
+// ============================================
+function renderMinhas() {
+    const cont = document.getElementById('view-minhas');
+    if (!cont) return;
+    const ts = tarefasFiltradas().filter(t => t.responsavel_id === estado.usuario_logado?.id);
+    if (ts.length === 0) {
+        cont.innerHTML = `<div class="minhas-section"><h2>👤 Minhas Tarefas</h2><div class="empty-state"><span class="emoji">🎉</span>Nada atribuído pra você no momento!<br>Use a aba Kanban pra criar ou se atribuir a uma tarefa.</div></div>`;
+        return;
+    }
+    // Agrupa por status
+    let html = '<div class="minhas-section"><h2>👤 Minhas Tarefas</h2>';
+    STATUSES.forEach(s => {
+        const tasks = ts.filter(t => t.status === s);
+        if (tasks.length === 0) return;
+        html += `<h3 style="margin-top:18px;margin-bottom:10px;font-family:var(--font-body);font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">${STATUS_EMOJI[s]} ${escapar(s)} (${tasks.length})</h3>`;
+        tasks.forEach(t => {
+            html += `<div class="minha-tarefa${t.concluida?' concluida':''}" onclick="abrirTarefa('${t.id}')">
+                <div class="minha-tarefa-top">
+                    <span class="minha-tarefa-titulo">${escapar(t.id)} · ${escapar(t.titulo)}</span>
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                        <span class="task-prio ${PRIORITY_CLASS[t.prioridade]}">${PRIORITY_EMOJI[t.prioridade]} ${escapar(t.prioridade)}</span>
+                        ${renderPrazoBadge(t)}
+                    </div>
+                </div>
+                ${t.descricao ? `<div style="font-size:12px;color:var(--text-muted);margin-top:4px">${escapar(t.descricao.substring(0,150))}${t.descricao.length>150?'...':''}</div>` : ''}
+            </div>`;
+        });
+    });
+    html += '</div>';
+    cont.innerHTML = html;
+}
+
+// ============================================
+// SETTINGS
+// ============================================
+function renderSettings() {
+    const cont = document.getElementById('view-settings');
+    if (!cont) return;
+    if (!podeGerenciar()) {
+        cont.innerHTML = '<div class="empty-state"><span class="emoji">🔒</span>Acesso restrito ao Super Admin.</div>';
+        return;
+    }
+    cont.innerHTML = `
+        <div class="settings-section">
+            <h2>👥 Usuários e Permissões</h2>
+            <p class="helper">Super Admin tem controle total. Editor cria/edita tarefas. Viewer apenas lê.</p>
+            <div class="users-list">
+                ${estado.usuarios.map(u => `
+                    <div class="user-row">
+                        <div class="avatar-lg" style="background:${u.cor || hashCor(u.id)}">${escapar(u.avatar || avatarFromName(u.nome))}</div>
+                        <div>
+                            <div class="user-name">${escapar(u.nome)}</div>
+                            <div class="user-email">${escapar(u.email)}</div>
+                        </div>
+                        <div class="role-badge ${u.role}">${ROLE_LABELS[u.role]}</div>
+                        <button class="btn sm" onclick="editarUsuario('${u.id}')">✏️</button>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        <div class="settings-section">
+            <h2>☁️ Conexão</h2>
+            <p class="helper">${MODO_NUVEM ? '<strong style="color:#16a34a">✓ Modo nuvem ativo:</strong> tudo sincroniza em tempo real.' : '<strong style="color:#f59e0b">⚠️ Modo local:</strong> dados ficam só neste navegador. Configure o Supabase pra ativar a nuvem.'}</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                ${MODO_NUVEM ? '<button class="btn primary" onclick="sincronizarLocalParaNuvem()">📤 Subir cache local para nuvem</button>' : ''}
+                <button class="btn" onclick="exportarJSON()">💾 Exportar JSON (backup)</button>
+            </div>
+        </div>
+        <div class="settings-section">
+            <h2>⚠️ Zona de risco</h2>
+            <p class="helper">Ações destrutivas. Faça um backup antes (botão acima).</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn danger" onclick="resetarDados()">🔄 Resetar tudo (volta ao seed)</button>
+            </div>
+        </div>
+    `;
+}
+
+async function sincronizarLocalParaNuvem() {
+    if (!MODO_NUVEM || !sb) { toast('Modo local', 'warn'); return; }
+    if (!confirm('Subir todas as tarefas do cache local pra nuvem? Vai sobrescrever conflitos pelos dados locais.')) return;
+    setStatusConexao('syncing');
+    try {
+        for (let i = 0; i < estado.tarefas.length; i += 50) {
+            const chunk = estado.tarefas.slice(i, i + 50).map(sanitizar);
+            const { error } = await sb.from('tarefas').upsert(chunk);
+            if (error) throw error;
+        }
+        toast(`Sincronizado ✓ · ${estado.tarefas.length} tarefas`, 'success');
+        setStatusConexao('online');
+    } catch (e) {
+        toast('Erro: ' + e.message, 'danger');
+        setStatusConexao('error');
+    }
+}
+
+function exportarJSON() {
+    const data = {
+        tarefas: estado.tarefas,
+        comentarios: estado.comentarios,
+        atividade: estado.atividade,
+        usuarios: estado.usuarios.map(u => ({ ...u, hash: undefined })),
+        exportado_em: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hxc-tasks-backup-${fmtDateBR(new Date()).replace(/\//g,'-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Backup baixado ✓', 'success');
+}
+
+function resetarDados() {
+    if (!podeGerenciar()) return;
+    if (!confirm('Resetar TODOS os dados? Faça backup antes!')) return;
+    if (!confirm('Tem certeza? Esta ação é IRREVERSÍVEL.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+}
+
+function editarUsuario(id) {
+    if (!podeGerenciar()) return;
+    const u = estado.usuarios.find(x => x.id === id);
+    if (!u) return;
+    abrirModal(`
+        <div class="modal-header">
+            <div class="modal-header-top">
+                <span class="modal-id">✏️ ${escapar(u.nome)}</span>
+                <button class="modal-close" onclick="fecharModal()">✕</button>
+            </div>
+            <div class="modal-title">Editar usuário</div>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="user-id" value="${escaparAttr(u.id)}">
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Nome</label><input type="text" id="user-nome" class="form-input" value="${escaparAttr(u.nome)}"></div>
+                <div class="form-group"><label class="form-label">Avatar</label><input type="text" id="user-avatar" class="form-input" maxlength="3" value="${escaparAttr(u.avatar || '')}"></div>
+            </div>
+            <div class="form-group"><label class="form-label">E-mail</label><input type="text" id="user-email" class="form-input" value="${escaparAttr(u.email)}" readonly style="background:var(--bg-surface-3)"></div>
+            <div class="form-group"><label class="form-label">Perfil</label>
+                <select id="user-role" class="form-select">
+                    <option value="viewer" ${u.role==='viewer'?'selected':''}>Viewer · só leitura</option>
+                    <option value="editor" ${u.role==='editor'?'selected':''}>Editor · cria/edita</option>
+                    <option value="superadmin" ${u.role==='superadmin'?'selected':''}>Super Admin · controle total</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="fecharModal()">Cancelar</button>
+            <button class="btn success" onclick="salvarUsuario()">💾 Salvar</button>
+        </div>
+    `, 'small');
+}
+
+async function salvarUsuario() {
+    const id = document.getElementById('user-id').value;
+    const nome = document.getElementById('user-nome').value.trim();
+    const avatar = document.getElementById('user-avatar').value.trim().toUpperCase() || avatarFromName(nome);
+    const role = document.getElementById('user-role').value;
+    const u = estado.usuarios.find(x => x.id === id);
+    if (!u) return;
+    if (MODO_NUVEM && sb) {
+        const { error } = await sb.from('app_users').update({ nome, avatar, role }).eq('id', id);
+        if (error) { toast('Erro: '+error.message, 'danger'); return; }
+    }
+    Object.assign(u, { nome, avatar, role });
+    salvar();
+    fecharModal();
+    renderSettings();
+    toast('Atualizado ✓', 'success');
+}
+
+// ============================================
+// MODAL DETALHE TAREFA
+// ============================================
+function abrirTarefa(id) {
+    const t = estado.tarefas.find(x => x.id === id);
+    if (!t) return;
+    estado.tarefaModalId = id;
+
+    if (MODO_NUVEM && sb && !estado.comentarios[id]) {
+        // Lazy load comentários e atividade da tarefa
+        carregarComentariosAtividade(id).then(() => abrirTarefaModal(t));
+        return;
+    }
+    abrirTarefaModal(t);
+}
+
+async function carregarComentariosAtividade(id) {
+    if (!MODO_NUVEM || !sb) return;
+    try {
+        const [cR, aR] = await Promise.all([
+            sb.from('tarefa_comentarios').select('*').eq('tarefa_id', id).order('created_at'),
+            sb.from('tarefa_atividade').select('*').eq('tarefa_id', id).order('created_at', { ascending: false })
+        ]);
+        if (cR.error) throw cR.error;
+        if (aR.error) throw aR.error;
+        estado.comentarios[id] = (cR.data || []).map(c => ({
+            _id: c.id, autor_id: c.autor_id, texto: c.texto, created_at: c.created_at
+        }));
+        estado.atividade[id] = (aR.data || []).map(a => ({
+            _id: a.id, autor_id: a.autor_id, acao: a.acao, de: a.de, para: a.para, created_at: a.created_at
+        }));
+    } catch (e) { console.warn('coments/atividade:', e); }
+}
+
+function abrirTarefaModal(t) {
+    const responsavel = estado.usuarios.find(u => u.id === t.responsavel_id);
+    const coments = estado.comentarios[t.id] || [];
+    const atividade = estado.atividade[t.id] || [];
+
+    abrirModal(`
+        <div class="modal-header">
+            <div class="modal-header-top">
+                <span class="modal-id">${escapar(t.id)} · ${PRIORITY_EMOJI[t.prioridade]} ${escapar(t.prioridade)}</span>
+                <button class="modal-close" onclick="fecharModal()">✕</button>
+            </div>
+            <div class="modal-title">${escapar(t.titulo)}</div>
+            <div class="modal-meta">
+                <span>${STATUS_EMOJI[t.status]} ${escapar(t.status)}</span>
+                ${t.prazo ? `<span>📅 ${escapar(isoToBR(t.prazo))}</span>` : ''}
+                ${responsavel ? `<span>👤 ${escapar(responsavel.nome)}</span>` : ''}
+                ${(t.tags||[]).length ? `<span>🏷️ ${escapar(t.tags.join(', '))}</span>` : ''}
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="modal-field">
+                <div class="modal-field-label">📝 Descrição</div>
+                <div class="modal-field-value">${escapar(t.descricao || '—')}</div>
+            </div>
+
+            <div class="modal-field">
+                <div class="modal-field-label">☑️ Subtarefas (${(t.subtarefas||[]).filter(s=>s.feito).length}/${(t.subtarefas||[]).length})</div>
+                <div class="subtarefas-list">
+                    ${(t.subtarefas || []).map((s, i) => `
+                        <div class="subtarefa-item ${s.feito?'feita':''}">
+                            <input type="checkbox" ${s.feito?'checked':''} ${podeEditar()?`onchange="toggleSubtarefa('${t.id}', ${i}, this.checked)"`:'disabled'}>
+                            <span class="subtarefa-texto">${escapar(s.texto)}</span>
+                            ${podeEditar() ? `<button class="subtarefa-remove" onclick="removerSubtarefa('${t.id}', ${i})" title="Remover">✕</button>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                ${podeEditar() ? `
+                <div class="subtarefa-add">
+                    <input type="text" class="form-input" id="nova-subt-${t.id}" placeholder="+ Adicionar subtarefa" onkeydown="if(event.key==='Enter') adicionarSubtarefa('${t.id}')">
+                    <button class="btn" onclick="adicionarSubtarefa('${t.id}')">+</button>
+                </div>` : ''}
+            </div>
+
+            <div class="modal-field">
+                <div class="modal-field-label">🔗 Anexos / Links</div>
+                <div class="subtarefas-list">
+                    ${(t.anexos || []).map((a, i) => `
+                        <div class="subtarefa-item">
+                            <span class="subtarefa-texto"><a href="${escaparAttr(a.url)}" target="_blank" rel="noopener" style="color:var(--c-primary);text-decoration:none">${escapar(a.titulo || a.url)}</a></span>
+                            ${podeEditar() ? `<button class="subtarefa-remove" onclick="removerAnexo('${t.id}', ${i})" title="Remover">✕</button>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                ${podeEditar() ? `
+                <div class="subtarefa-add">
+                    <input type="text" class="form-input" id="anexo-titulo-${t.id}" placeholder="Título (opcional)" style="flex:0 0 30%">
+                    <input type="text" class="form-input" id="anexo-url-${t.id}" placeholder="https://...">
+                    <button class="btn" onclick="adicionarAnexo('${t.id}')">+</button>
+                </div>` : ''}
+            </div>
+
+            <div class="modal-field">
+                <div class="modal-field-label">💬 Comentários (${coments.length})</div>
+                <div class="coments-list" id="coments-list-${t.id}">
+                    ${coments.map(c => renderComent(c)).join('')}
+                </div>
+                ${estado.usuario_logado ? `
+                <div class="coment-input-wrap">
+                    <textarea class="form-textarea" id="novo-coment-${t.id}" placeholder="Escreva um comentário..."></textarea>
+                    <button class="btn primary" onclick="postarComentario('${t.id}')">↵</button>
+                </div>` : ''}
+            </div>
+
+            ${atividade.length > 0 ? `
+            <div class="modal-field">
+                <div class="modal-field-label">📊 Atividade recente</div>
+                <div class="atividade-list">
+                    ${atividade.slice(0, 10).map(a => renderAtividade(a)).join('')}
+                </div>
+            </div>` : ''}
+        </div>
+        <div class="modal-actions">
+            ${podeEditar() ? `<button class="btn warn" onclick="abrirEditarTarefa('${t.id}')">✏️ Editar</button>` : ''}
+            ${podeExcluirTarefa(t) ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
+            <button class="btn primary" onclick="fecharModal()">Fechar</button>
+        </div>
+    `, 'wide');
+}
+
+function renderComent(c) {
+    const autor = estado.usuarios.find(u => u.id === c.autor_id);
+    const nome = autor ? autor.nome : 'Usuário';
+    const avatar = autor ? (autor.avatar || avatarFromName(autor.nome)) : '?';
+    const cor = autor ? (autor.cor || hashCor(autor.id)) : 'var(--text-muted)';
+    const quando = c.created_at ? new Date(c.created_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : 'agora';
+    return `
+    <div class="coment">
+        <span class="avatar-mini" style="background:${cor}">${escapar(avatar)}</span>
+        <div class="coment-body">
+            <div class="coment-head">
+                <span class="coment-author">${escapar(nome)}</span>
+                <span class="coment-time">${quando}</span>
+            </div>
+            <div class="coment-text">${escapar(c.texto)}</div>
+        </div>
+    </div>`;
+}
+
+function renderAtividade(a) {
+    const autor = estado.usuarios.find(u => u.id === a.autor_id);
+    const nome = autor ? autor.nome.split(' ')[0] : 'Sistema';
+    const quando = a.created_at ? new Date(a.created_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
+    let acaoTxt = '';
+    if (a.acao === 'status_change') acaoTxt = `mudou status de <strong>${escapar(a.de)}</strong> para <strong>${escapar(a.para)}</strong>`;
+    else if (a.acao === 'assignee_change') acaoTxt = `atribuiu de <strong>${escapar(a.de)}</strong> para <strong>${escapar(a.para)}</strong>`;
+    else acaoTxt = `${escapar(a.acao)}`;
+    return `<div class="atividade-item">${escapar(nome)} ${acaoTxt} <span style="margin-left:auto">${quando}</span></div>`;
+}
+
+// ============================================
+// SUBTAREFAS / ANEXOS / COMENTÁRIOS
+// ============================================
+function toggleSubtarefa(tid, idx, feito) {
+    const t = estado.tarefas.find(x => x.id === tid);
+    if (!t) return;
+    t.subtarefas[idx].feito = feito;
+    dbUpsertTarefa(t);
+    // Re-render só o item (simples: reabre modal)
+    abrirTarefa(tid);
+}
+function adicionarSubtarefa(tid) {
+    const inp = document.getElementById(`nova-subt-${tid}`);
+    if (!inp || !inp.value.trim()) return;
+    const t = estado.tarefas.find(x => x.id === tid);
+    if (!t) return;
+    t.subtarefas = t.subtarefas || [];
+    t.subtarefas.push({ texto: inp.value.trim(), feito: false });
+    dbUpsertTarefa(t);
+    abrirTarefa(tid);
+}
+function removerSubtarefa(tid, idx) {
+    const t = estado.tarefas.find(x => x.id === tid);
+    if (!t || !t.subtarefas[idx]) return;
+    t.subtarefas.splice(idx, 1);
+    dbUpsertTarefa(t);
+    abrirTarefa(tid);
+}
+function adicionarAnexo(tid) {
+    const urlEl = document.getElementById(`anexo-url-${tid}`);
+    const titEl = document.getElementById(`anexo-titulo-${tid}`);
+    if (!urlEl || !urlEl.value.trim()) { toast('Cole uma URL', 'warn'); return; }
+    let url = urlEl.value.trim();
+    if (!url.startsWith('http')) url = 'https://' + url;
+    const titulo = titEl.value.trim() || url;
+    const t = estado.tarefas.find(x => x.id === tid);
+    if (!t) return;
+    t.anexos = t.anexos || [];
+    t.anexos.push({ titulo, url });
+    dbUpsertTarefa(t);
+    abrirTarefa(tid);
+}
+function removerAnexo(tid, idx) {
+    const t = estado.tarefas.find(x => x.id === tid);
+    if (!t || !t.anexos[idx]) return;
+    t.anexos.splice(idx, 1);
+    dbUpsertTarefa(t);
+    abrirTarefa(tid);
+}
+async function postarComentario(tid) {
+    const ta = document.getElementById(`novo-coment-${tid}`);
+    if (!ta || !ta.value.trim()) return;
+    const texto = ta.value.trim();
+    const u = estado.usuario_logado;
+    if (!u) return;
+    const coment = {
+        _id: Date.now(),
+        autor_id: u.id,
+        texto,
+        created_at: new Date().toISOString()
+    };
+    if (!estado.comentarios[tid]) estado.comentarios[tid] = [];
+    estado.comentarios[tid].push(coment);
+    ta.value = '';
+    salvar();
+    abrirTarefa(tid);
+    // Persistir na nuvem
+    if (MODO_NUVEM && sb) {
+        const r = await dbInsertComentario({ tarefa_id: tid, autor_id: u.id, texto });
+        if (r.ok && r.data) {
+            const last = estado.comentarios[tid][estado.comentarios[tid].length - 1];
+            if (last) last._id = r.data.id;
+        }
+    }
+}
+
+// ============================================
+// CRIAR / EDITAR / EXCLUIR TAREFA
+// ============================================
+function abrirNovaTarefa() {
+    if (!podeEditar()) return;
+    abrirEditarTarefa(null, true, null);
+}
+function abrirNovaTarefaNoStatus(status) {
+    if (!podeEditar()) return;
+    abrirEditarTarefa(null, true, status);
+}
+function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
+    let t;
+    if (novaTarefa) {
+        t = {
+            id: gerarIdTarefa(),
+            titulo: '', descricao: '',
+            status: statusPre || 'Backlog',
+            prioridade: 'Média',
+            responsavel_id: estado.usuario_logado?.id || null,
+            prazo: null,
+            tags: [], subtarefas: [], anexos: [],
+            concluida: false
+        };
+    } else {
+        t = estado.tarefas.find(x => x.id === id);
+        if (!t) return;
+    }
+    window._editandoTags = [...(t.tags || [])];
+
+    const usersOpts = ['<option value="">— sem responsável —</option>',
+        ...estado.usuarios.map(u => `<option value="${escaparAttr(u.id)}" ${t.responsavel_id===u.id?'selected':''}>${escapar(u.nome)} (${ROLE_LABELS[u.role]})</option>`)
+    ].join('');
+
+    abrirModal(`
+        <div class="modal-header">
+            <div class="modal-header-top">
+                <span class="modal-id">${novaTarefa?'➕ Nova tarefa':'✏️ Editar ' + escapar(t.id)}</span>
+                <button class="modal-close" onclick="fecharModal()">✕</button>
+            </div>
+            <div class="modal-title">${novaTarefa?'Nova tarefa':escapar(t.titulo || t.id)}</div>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-id" value="${escaparAttr(t.id)}">
+
+            <div class="form-group">
+                <label class="form-label">Título *</label>
+                <input type="text" id="edit-titulo" class="form-input" value="${escaparAttr(t.titulo)}" autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Descrição</label>
+                <textarea id="edit-descricao" class="form-textarea large">${escapar(t.descricao || '')}</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="edit-status" class="form-select">
+                        ${STATUSES.map(s => `<option value="${escaparAttr(s)}" ${t.status===s?'selected':''}>${STATUS_EMOJI[s]} ${escapar(s)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Prioridade</label>
+                    <select id="edit-prioridade" class="form-select">
+                        ${PRIORITIES.map(p => `<option value="${escaparAttr(p)}" ${t.prioridade===p?'selected':''}>${PRIORITY_EMOJI[p]} ${escapar(p)}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Responsável</label>
+                    <select id="edit-responsavel" class="form-select">${usersOpts}</select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Prazo</label>
+                    <input type="date" id="edit-prazo" class="form-input" value="${escaparAttr(t.prazo || '')}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">🏷️ Tags</label>
+                <div class="multi-select-wrap" id="tags-wrap" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:2px solid var(--border);border-radius:8px;background:var(--bg-input);min-height:44px"></div>
+                <input type="text" id="tag-input" class="form-input" style="margin-top:6px" placeholder="Digite uma tag e aperte Enter (ex: bug, design, urgente)" onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarTag();}">
+            </div>
+        </div>
+        <div class="modal-actions">
+            ${!novaTarefa && podeExcluirTarefa(t) ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
+            <button class="btn" onclick="fecharModal()">Cancelar</button>
+            <button class="btn success" onclick="salvarTarefa(${novaTarefa})">${novaTarefa?'➕ Criar':'💾 Salvar'}</button>
+        </div>
+    `);
+    redesenharTags();
+}
+
+function redesenharTags() {
+    const w = document.getElementById('tags-wrap');
+    if (!w) return;
+    const tags = window._editandoTags || [];
+    w.innerHTML = tags.map(tag =>
+        `<span class="tag-chip" style="background:${hashCor(tag)};color:white">${escapar(tag)} <button type="button" onclick="removerTag('${escaparAttr(tag)}')">✕</button></span>`
+    ).join('');
+    if (tags.length === 0) w.innerHTML = '<span style="color:var(--text-muted);font-size:12px;font-style:italic">Nenhuma tag</span>';
+}
+function adicionarTag() {
+    const inp = document.getElementById('tag-input');
+    if (!inp || !inp.value.trim()) return;
+    const tag = inp.value.trim().toLowerCase();
+    if (!window._editandoTags.includes(tag)) window._editandoTags.push(tag);
+    inp.value = '';
+    redesenharTags();
+}
+function removerTag(tag) {
+    window._editandoTags = (window._editandoTags || []).filter(x => x !== tag);
+    redesenharTags();
+}
+
+function salvarTarefa(novaTarefa) {
+    const id = document.getElementById('edit-id').value;
+    const titulo = document.getElementById('edit-titulo').value.trim();
+    if (!titulo) { toast('Título obrigatório', 'warn'); return; }
+    const dados = {
+        id,
+        titulo,
+        descricao: document.getElementById('edit-descricao').value,
+        status: document.getElementById('edit-status').value,
+        prioridade: document.getElementById('edit-prioridade').value,
+        responsavel_id: document.getElementById('edit-responsavel').value || null,
+        prazo: document.getElementById('edit-prazo').value || null,
+        tags: window._editandoTags || [],
+        subtarefas: [], anexos: [],
+        concluida: false
+    };
+    if (novaTarefa) {
+        dados.criado_por = estado.usuario_logado?.id || null;
+        estado.tarefas.push(dados);
+        toast('Tarefa criada ✓', 'success');
+    } else {
+        const idx = estado.tarefas.findIndex(x => x.id === id);
+        if (idx === -1) return;
+        // Mantém subtarefas e anexos
+        dados.subtarefas = estado.tarefas[idx].subtarefas || [];
+        dados.anexos = estado.tarefas[idx].anexos || [];
+        dados.criado_por = estado.tarefas[idx].criado_por;
+        dados.concluida = dados.status === 'Concluída';
+        estado.tarefas[idx] = dados;
+        toast('Atualizada ✓', 'success');
+    }
+    dbUpsertTarefa(dados);
+    renderTudo();
+    fecharModal();
+}
+
+async function excluirTarefa(id) {
+    const t = estado.tarefas.find(x => x.id === id);
+    if (!t || !podeExcluirTarefa(t)) return;
+    if (!confirm(`Excluir "${t.titulo}"? Não dá pra desfazer.`)) return;
+    estado.tarefas = estado.tarefas.filter(x => x.id !== id);
+    await dbDeleteTarefa(id);
+    fecharModal();
+    renderTudo();
+    toast('Tarefa excluída', 'success');
+}
+
+// ============================================
+// NAVEGAÇÃO
+// ============================================
+function trocarVista(vista) {
+    estado.vista_atual = vista;
+    const principais = ['kanban','calendario','mensal','minhas'];
+    document.querySelectorAll('.btn.tab').forEach(t => {
+        const v = t.getAttribute('data-vista');
+        const ehMais = t.classList.contains('more-tab');
+        if (ehMais) t.classList.toggle('active', !principais.includes(vista));
+        else t.classList.toggle('active', v === vista);
+    });
+    document.querySelectorAll('.more-menu-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-vista') === vista);
+    });
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const v = document.getElementById('view-' + vista);
+    if (v) v.classList.add('active');
+    if (vista === 'mensal') renderMensal();
+    if (vista === 'settings' && podeGerenciar()) renderSettings();
+    if (vista === 'minhas') renderMinhas();
+}
+function toggleMoreMenu(ev) {
+    if (ev) ev.stopPropagation();
+    document.getElementById('more-menu')?.classList.toggle('open');
+}
+function trocarVistaFromMenu(vista, ev) {
+    if (ev) ev.stopPropagation();
+    document.getElementById('more-menu')?.classList.remove('open');
+    trocarVista(vista);
+}
+
+// ============================================
+// SHORTCUTS + SEARCH
+// ============================================
+function instalarAtalhos() {
+    document.addEventListener('keydown', e => {
+        const tag = (e.target.tagName || '').toLowerCase();
+        const dentroInput = ['input','textarea','select'].includes(tag);
+        if (e.key === 'Escape') { fecharModal(); return; }
+        if (dentroInput) return;
+        if (e.key === '/') { document.getElementById('search-input')?.focus(); e.preventDefault(); }
+        else if (e.key.toLowerCase() === 't') alternarTema();
+        else if (e.key.toLowerCase() === 'n' && podeEditar()) abrirNovaTarefa();
+        else if (['1','2','3','4','5'].includes(e.key)) {
+            const map = ['kanban','calendario','mensal','minhas','settings'];
+            const v = map[parseInt(e.key,10) - 1];
+            if (v) trocarVista(v);
+        }
+    });
+}
+function instalarBusca() {
+    const sb = document.getElementById('search-input');
+    const clr = document.getElementById('search-clear');
+    if (!sb) return;
+    sb.addEventListener('input', e => {
+        estado.filtros.busca = e.target.value.trim();
+        if (clr) clr.classList.toggle('visible', !!estado.filtros.busca);
+        renderTudo();
+    });
+    if (clr) clr.addEventListener('click', () => {
+        sb.value = '';
+        estado.filtros.busca = '';
+        clr.classList.remove('visible');
+        renderTudo();
+    });
+}
+
+document.addEventListener('click', e => {
+    const more = document.getElementById('more-menu');
+    if (more && more.classList.contains('open') && !more.contains(e.target) && !e.target.closest('.more-tab')) {
+        more.classList.remove('open');
+    }
+});
+
+// ============================================
+// INIT
+// ============================================
+async function inicializar() {
+    carregarTema();
+    if (window.EXPORTED_DATA) {
+        try {
+            const d = window.EXPORTED_DATA;
+            if (Array.isArray(d.tarefas)) {
+                estado.tarefas = d.tarefas.map(migrarTarefa);
+                estado.comentarios = d.comentarios || {};
+                estado.atividade = d.atividade || {};
+                estado.usuarios = d.usuarios || JSON.parse(JSON.stringify(USERS_DEFAULT));
+                salvar();
+                toast('Dados restaurados do snapshot ✓', 'success');
+            } else { await carregar(); }
+        } catch (e) { await carregar(); }
+    } else {
+        await carregar();
+    }
+    instalarAtalhos();
+    instalarBusca();
+    window.addEventListener('click', e => {
+        const overlay = document.getElementById('modal-overlay');
+        if (e.target === overlay) fecharModal();
+    });
+    const restored = await tryRestoreSession();
+    if (restored) await entrarNoApp();
+    else mostrarLogin();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializar);
+} else {
+    inicializar();
+}
+
+</script>
+</body>
+</html>
