@@ -16,8 +16,8 @@
 // (deixe assim para usar modo LOCAL · sem nuvem)
 // ============================================
 window.SUPABASE_CONFIG = {
-    url: 'https://obyowyzlwfpdsqfuenqq.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieW93eXpsd2ZwZHNxZnVlbnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU5NzIsImV4cCI6MjA5NTMzMTk3Mn0.yW1u0QDBJJfv_GYZlqwrQfWakbSl2s7ZDvZGQrAk1Bk'
+    url: 'https://YOUR_PROJECT.supabase.co',
+    anonKey: 'YOUR_ANON_KEY'
 };
 </script>
 <style>
@@ -330,6 +330,62 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 }
 .stat-value { font-family: var(--font-display); font-size: 24px; display: block; line-height: 1; margin-bottom: 4px; }
 .stat-label { font-size: 11px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ============================================
+   ALERT BOX · próximas demandas
+============================================ */
+.alert-box {
+    max-width: 1480px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #FF9F1C, #F39208);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: 0 8px 24px rgba(243,146,8,0.3);
+    transition: all 0.3s;
+}
+.alert-box.done {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 8px 24px rgba(22,163,74,0.3);
+}
+.alert-box.urgente {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 8px 24px rgba(239,68,68,0.35);
+}
+.alert-icon { font-size: 24px; flex-shrink: 0; line-height: 1.2; }
+.alert-text { font-size: 14px; line-height: 1.5; flex: 1; }
+.alert-text strong { font-weight: 700; }
+.alert-text ul {
+    list-style: none;
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.alert-text ul li {
+    background: rgba(0,0,0,0.18);
+    padding: 5px 11px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.alert-text ul li:hover { background: rgba(0,0,0,0.3); }
+.alert-text .alert-code {
+    background: rgba(0,0,0,0.25);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+    font-family: 'SF Mono', Monaco, monospace;
+}
+.alert-text small { opacity: 0.85; font-size: 11px; }
 
 /* ============================================
    TOOLBAR
@@ -1312,6 +1368,11 @@ footer strong { color: white; }
     </div>
 </header>
 
+<div class="alert-box" id="alert-box">
+    <span class="alert-icon">📋</span>
+    <div class="alert-text" id="alert-text">Carregando...</div>
+</div>
+
 <div class="toolbar">
     <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -1871,11 +1932,79 @@ function tarefasFiltradas() {
 function renderTudo() {
     renderToolbar();
     renderStats();
+    renderAlerta();
     renderKanban();
     renderCalendario();
     renderMensal();
     renderMinhas();
     renderSettings();
+}
+
+function renderAlerta() {
+    const box = document.getElementById('alert-box');
+    const alerta = document.getElementById('alert-text');
+    if (!box || !alerta) return;
+
+    const tarefas = tarefasFiltradas().filter(t => t.status !== 'Concluída');
+    if (tarefas.length === 0) {
+        box.className = 'alert-box done';
+        box.querySelector('.alert-icon').textContent = '🎉';
+        alerta.innerHTML = '<strong>Tudo concluído!</strong> Nenhuma tarefa pendente no time. Bora criar novas demandas?';
+        return;
+    }
+
+    // Ordena: urgentes primeiro, depois prazo mais próximo, depois alta prioridade
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const farFuture = new Date(8640000000000000);
+    const pesoPrio = { 'Urgente': 0, 'Alta': 1, 'Média': 2, 'Baixa': 3 };
+
+    const ordenadas = [...tarefas].sort((a, b) => {
+        // Atrasadas vêm primeiro
+        const aAtras = a.prazo && parseDateISO(a.prazo) < hoje;
+        const bAtras = b.prazo && parseDateISO(b.prazo) < hoje;
+        if (aAtras !== bAtras) return aAtras ? -1 : 1;
+
+        // Depois urgentes
+        const pa = pesoPrio[a.prioridade] ?? 9;
+        const pb = pesoPrio[b.prioridade] ?? 9;
+        if (pa !== pb) return pa - pb;
+
+        // Depois por prazo (sem prazo vai pro fim)
+        const dA = a.prazo ? parseDateISO(a.prazo) : farFuture;
+        const dB = b.prazo ? parseDateISO(b.prazo) : farFuture;
+        return dA - dB;
+    });
+
+    const proximas = ordenadas.slice(0, 5);
+    const temUrgente = proximas.some(t => t.prioridade === 'Urgente' || (t.prazo && parseDateISO(t.prazo) < hoje));
+    const atrasadas = tarefas.filter(t => t.prazo && parseDateISO(t.prazo) < hoje).length;
+    const urgentes = tarefas.filter(t => t.prioridade === 'Urgente').length;
+
+    box.className = 'alert-box' + (temUrgente ? ' urgente' : '');
+    box.querySelector('.alert-icon').textContent = temUrgente ? '🚨' : '📋';
+
+    let resumo = `<strong>${tarefas.length} ${tarefas.length===1?'tarefa pendente':'tarefas pendentes'}</strong>`;
+    const partes = [];
+    if (atrasadas > 0) partes.push(`${atrasadas} atrasada${atrasadas>1?'s':''}`);
+    if (urgentes > 0) partes.push(`${urgentes} urgente${urgentes>1?'s':''}`);
+    if (partes.length) resumo += ` · ${partes.join(' · ')}`;
+
+    let html = `${resumo}<ul>`;
+    proximas.forEach(t => {
+        const prazo = t.prazo ? ` · ${isoToBR(t.prazo)}` : '';
+        const prioIcon = PRIORITY_EMOJI[t.prioridade] || '';
+        const responsavel = estado.usuarios.find(u => u.id === t.responsavel_id);
+        const quem = responsavel ? ` · ${escapar(responsavel.nome.split(' ')[0])}` : '';
+        const atrasada = t.prazo && parseDateISO(t.prazo) < hoje;
+        const prazoTxt = atrasada ? `<small style="color:#fef3c7">⚠️ atrasada${prazo}</small>` : `<small>${prazo}${quem}</small>`;
+        html += `<li onclick="abrirTarefa('${t.id}')" title="Abrir tarefa">
+            <span class="alert-code">${escapar(t.id)}</span>
+            ${prioIcon} ${escapar(t.titulo)}
+            ${prazoTxt}
+        </li>`;
+    });
+    html += '</ul>';
+    alerta.innerHTML = html;
 }
 
 function renderToolbar() {
@@ -2170,22 +2299,30 @@ function renderSettings() {
         cont.innerHTML = '<div class="empty-state"><span class="emoji">🔒</span>Acesso restrito ao Super Admin.</div>';
         return;
     }
+    const meId = estado.usuario_logado.id;
     cont.innerHTML = `
         <div class="settings-section">
             <h2>👥 Usuários e Permissões</h2>
-            <p class="helper">Super Admin tem controle total. Editor cria/edita tarefas. Viewer apenas lê.</p>
+            <p class="helper">Super Admin gerencia o time. Editor cria e edita tarefas. Viewer só visualiza.</p>
             <div class="users-list">
-                ${estado.usuarios.map(u => `
-                    <div class="user-row">
+                ${estado.usuarios.map(u => {
+                    const ehVoce = u.id === meId;
+                    const podeRemover = !ehVoce && u.role !== 'superadmin';
+                    return `
+                    <div class="user-row" style="grid-template-columns:40px 1fr 100px auto auto">
                         <div class="avatar-lg" style="background:${u.cor || hashCor(u.id)}">${escapar(u.avatar || avatarFromName(u.nome))}</div>
                         <div>
-                            <div class="user-name">${escapar(u.nome)}</div>
+                            <div class="user-name">${escapar(u.nome)} ${ehVoce ? '<small style="color:var(--c-orange);font-weight:700;margin-left:4px">(você)</small>' : ''}</div>
                             <div class="user-email">${escapar(u.email)}</div>
                         </div>
                         <div class="role-badge ${u.role}">${ROLE_LABELS[u.role]}</div>
-                        <button class="btn sm" onclick="editarUsuario('${u.id}')">✏️</button>
-                    </div>
-                `).join('')}
+                        <button class="btn sm" onclick="editarUsuario('${u.id}')" title="Editar">✏️</button>
+                        ${podeRemover ? `<button class="btn danger sm" onclick="excluirUsuario('${u.id}')" title="Remover do time">🗑️</button>` : `<button class="btn sm" disabled title="${ehVoce ? 'Você mesmo' : 'Super Admin protegido'}" style="opacity:0.3">🔒</button>`}
+                    </div>`;
+                }).join('')}
+            </div>
+            <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn primary" onclick="novoUsuario()">➕ Novo usuário</button>
             </div>
         </div>
         <div class="settings-section">
@@ -2282,6 +2419,171 @@ function editarUsuario(id) {
             <button class="btn success" onclick="salvarUsuario()">💾 Salvar</button>
         </div>
     `, 'small');
+}
+
+function novoUsuario() {
+    if (!podeGerenciar()) { toast('Apenas Super Admin pode adicionar usuários', 'warn'); return; }
+    abrirModal(`
+        <div class="modal-header">
+            <div class="modal-header-top">
+                <span class="modal-id">➕ Novo usuário</span>
+                <button class="modal-close" onclick="fecharModal()">✕</button>
+            </div>
+            <div class="modal-title">Adicionar membro ao time</div>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Nome completo *</label>
+                    <input type="text" id="new-user-nome" class="form-input" placeholder="Maria Silva" autofocus>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Iniciais</label>
+                    <input type="text" id="new-user-avatar" class="form-input" maxlength="3" placeholder="MS">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">E-mail *</label>
+                <input type="email" id="new-user-email" class="form-input" placeholder="maria@empresa.com">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Perfil *</label>
+                    <select id="new-user-role" class="form-select">
+                        <option value="viewer">Viewer · só leitura</option>
+                        <option value="editor" selected>Editor · cria/edita tarefas</option>
+                        <option value="superadmin">Super Admin · controle total</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Senha inicial *</label>
+                    <input type="password" id="new-user-senha" class="form-input" placeholder="Mínimo 8 caracteres">
+                </div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:-8px;margin-bottom:14px">A pessoa pode trocar a senha depois pelo Supabase (esquecer senha por e-mail).</div>
+            ${MODO_NUVEM ? `
+            <div style="background:#fef3c7;padding:12px;border-radius:8px;border-left:4px solid #f59e0b;font-size:12px;color:#78350f;line-height:1.5">
+                ⚠️ <strong>Importante:</strong> se o seu Supabase exige confirmação de e-mail (padrão), o novo usuário receberá um link no e-mail e <strong>só conseguirá logar depois de clicar</strong>. Pra desabilitar e o cara logar direto:
+                <ol style="margin-top:6px;margin-left:18px;list-style:decimal">
+                    <li>Vá no Supabase → <strong>Authentication</strong> → <strong>Providers</strong> → <strong>Email</strong></li>
+                    <li>Desmarque <strong>"Confirm email"</strong> → Save</li>
+                </ol>
+            </div>` : `
+            <div style="background:rgba(1,102,179,0.06);padding:10px 12px;border-radius:8px;border-left:4px solid var(--c-primary);font-size:12px;color:var(--c-primary)">
+                💡 Modo local: o usuário é salvo só neste navegador. Pra time real, configure o Supabase.
+            </div>`}
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="fecharModal()">Cancelar</button>
+            <button class="btn success" onclick="salvarNovoUsuario()" id="btn-create-user">➕ Criar usuário</button>
+        </div>
+    `, 'small');
+}
+
+async function salvarNovoUsuario() {
+    const btn = document.getElementById('btn-create-user');
+    const nome = document.getElementById('new-user-nome').value.trim();
+    const avatarRaw = document.getElementById('new-user-avatar').value.trim().toUpperCase();
+    const email = document.getElementById('new-user-email').value.trim().toLowerCase();
+    const role = document.getElementById('new-user-role').value;
+    const senha = document.getElementById('new-user-senha').value;
+    const avatar = avatarRaw || avatarFromName(nome);
+
+    if (!nome) { toast('Nome é obrigatório', 'warn'); return; }
+    if (!email || !email.includes('@')) { toast('E-mail inválido', 'warn'); return; }
+    if (!senha || senha.length < 8) { toast('Senha precisa ter no mínimo 8 caracteres', 'warn'); return; }
+    if (estado.usuarios.find(u => u.email.toLowerCase() === email)) {
+        toast('Já existe um usuário com esse e-mail', 'warn'); return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Criando...'; }
+
+    if (MODO_NUVEM && sb) {
+        try {
+            // 1. Salva sessão do admin atual
+            const { data: { session: adminSession } } = await sb.auth.getSession();
+            if (!adminSession) {
+                toast('Erro: sessão expirou', 'danger');
+                if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
+                return;
+            }
+
+            // 2. SignUp do novo usuário (vai trocar a sessão temporariamente)
+            const { data, error } = await sb.auth.signUp({
+                email,
+                password: senha,
+                options: { data: { nome, role, avatar } }
+            });
+
+            if (error) {
+                toast('Erro: ' + error.message, 'danger');
+                if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
+                return;
+            }
+
+            // 3. Restaura sessão do admin (volta a ser super admin)
+            await sb.auth.setSession({
+                access_token: adminSession.access_token,
+                refresh_token: adminSession.refresh_token
+            });
+
+            // 4. Atualiza role e dados via update (caso trigger não tenha pego o metadata)
+            if (data.user) {
+                await sb.from('app_users').update({ nome, role, avatar }).eq('id', data.user.id);
+            }
+
+            // 5. Recarrega lista
+            const { data: usersData } = await sb.from('app_users').select('*').order('role');
+            if (usersData) {
+                estado.usuarios = usersData.map(u => ({
+                    id: u.id, nome: u.nome, email: u.email, avatar: u.avatar, role: u.role, ativo: u.ativo
+                }));
+                salvar();
+            }
+
+            const precisaConfirmar = data.user && !data.user.email_confirmed_at;
+            toast(`Usuário ${nome} criado ✓${precisaConfirmar ? ' · confirmação pendente no e-mail' : ''}`, 'success');
+            fecharModal();
+            renderSettings();
+        } catch (e) {
+            console.error(e);
+            toast('Erro: ' + e.message, 'danger');
+            if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
+        }
+        return;
+    }
+
+    // Modo LOCAL
+    try {
+        const id = 'u-' + Date.now();
+        const hash = await sha256(senha);
+        estado.usuarios.push({ id, email, nome, avatar, role, hash, ativo: true });
+        salvar();
+        fecharModal();
+        renderSettings();
+        toast(`Usuário ${nome} criado ✓ (modo local)`, 'success');
+    } catch (e) {
+        toast('Erro: ' + e.message, 'danger');
+        if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
+    }
+}
+
+async function excluirUsuario(id) {
+    if (!podeGerenciar()) { toast('Apenas Super Admin', 'warn'); return; }
+    const u = estado.usuarios.find(x => x.id === id);
+    if (!u) return;
+    if (u.id === estado.usuario_logado.id) { toast('Você não pode excluir você mesmo', 'warn'); return; }
+    if (u.role === 'superadmin') { toast('Super Admins só podem ser removidos pelo painel Supabase Auth', 'warn'); return; }
+    if (!confirm(`Remover "${u.nome}" do time?\n\nIsso vai impedir o login. O usuário ainda existirá no Supabase Auth (pra apagar de vez, vá em Authentication > Users no painel do Supabase).`)) return;
+
+    if (MODO_NUVEM && sb) {
+        const { error } = await sb.from('app_users').delete().eq('id', id);
+        if (error) { toast('Erro: ' + error.message, 'danger'); return; }
+    }
+    estado.usuarios = estado.usuarios.filter(x => x.id !== id);
+    salvar();
+    renderSettings();
+    toast(`${u.nome} removido do time`, 'success');
 }
 
 async function salvarUsuario() {
