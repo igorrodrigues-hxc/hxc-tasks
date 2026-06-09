@@ -263,7 +263,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
    ALERT BOX
 ============================================ */
 .alert-box {
-    margin: 20px auto; padding: 16px 28px;
+    margin: 20px auto; padding: 16px 36px;
     background: rgba(255,255,255,0.88);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border);
@@ -412,7 +412,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 ============================================ */
 .view { display: none; max-width: 1480px; margin: 0 auto; }
 .view.active { display: block; }
-.view, .toolbar, .tabs, .alert-box { padding-left: 0; padding-right: 0; }
+.view, .toolbar, .tabs { padding-left: 0; padding-right: 0; }
 .view { padding-left: 0; padding-right: 0; }
 
 /* ============================================
@@ -1719,7 +1719,7 @@ function renderAlerta() {
         const responsavel = estado.usuarios.find(u => u.id === t.responsavel_id);
         const quem = responsavel ? ` · ${escapar(responsavel.nome.split(' ')[0])}` : '';
         const atrasada = t.prazo && parseDateISO(t.prazo) < hoje;
-        const prazoTxt = atrasada ? `<small style="color:#fef3c7">⚠️ atrasada${prazo}</small>` : `<small>${prazo}${quem}</small>`;
+        const prazoTxt = atrasada ? `<small style="color:#B45309;font-weight:700">⚠️ atrasada${prazo}</small>` : `<small>${prazo}${quem}</small>`;
         listHtml += `<li onclick="abrirTarefa('${t.id}')" title="Abrir tarefa">
             <span class="alert-code">${escapar(t.id)}</span>
             ${prioIcon} ${escapar(t.titulo)}
