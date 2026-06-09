@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>HXC Tasks · Gestão de demandas</title>
+<title>HiperXCAP Tasks · Gestão de Demandas</title>
 <meta name="description" content="Gestão de tarefas e demandas do time HXC Tech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,34 +118,51 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     user-select: none;
     white-space: nowrap;
 }
-.hxc-logo .hxc-hxc {
+.hxc-logo .hxc-hiper {
     color: var(--c-primary);
     position: relative;
 }
-.hxc-logo .hxc-hxc::after {
+.hxc-logo .hxc-hiper::after {
     content: '✓';
     position: absolute;
-    top: -0.32em;
-    right: -0.12em;
-    width: 0.42em;
-    height: 0.42em;
+    top: -0.36em;
+    right: -0.06em;
+    width: 0.44em;
+    height: 0.44em;
     background: var(--c-primary);
-    color: var(--c-orange);
+    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.28em;
+    font-size: 0.26em;
     font-weight: 900;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1;
-    box-shadow: 0 0 0 0.04em white;
+    box-shadow: 0 0 0 0.06em white;
     padding-bottom: 0.02em;
 }
-.hxc-logo .hxc-tasks {
+.hxc-logo .hxc-xcap {
     color: var(--c-orange);
-    margin-left: 0.18em;
+    margin-left: 0.04em;
 }
+/* Tasks subtitle label under logo */
+.hxc-logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.hxc-logo-subtitle {
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+.brand-pill .hxc-logo-subtitle { color: var(--text-secondary); }
 .hxc-logo.size-sm { font-size: 28px; }
 .hxc-logo.size-md { font-size: 44px; }
 .hxc-logo.size-lg { font-size: 64px; }
@@ -170,11 +187,11 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 }
 .login-card {
     background: white;
-    border-radius: 24px;
-    padding: 40px;
+    border-radius: 28px;
+    padding: 44px 40px;
     max-width: 440px;
     width: 100%;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
     text-align: center;
 }
 .login-logo { display: inline-block; margin: 0 auto 24px; }
@@ -302,14 +319,17 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 .icon-toggle:hover { background: rgba(255,255,255,0.25); }
 .header h1 {
     font-family: var(--font-display);
-    font-size: 38px;
-    margin-bottom: 6px;
+    font-size: 36px;
+    margin-bottom: 4px;
     color: white;
+    letter-spacing: -1px;
 }
 .subtitle {
-    font-size: 15px;
-    opacity: 0.85;
-    margin-bottom: 24px;
+    font-size: 14px;
+    opacity: 0.75;
+    margin-bottom: 22px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 /* Stats compactos */
@@ -328,8 +348,8 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     border: 1px solid rgba(255,255,255,0.2);
     min-width: 90px;
 }
-.stat-value { font-family: var(--font-display); font-size: 24px; display: block; line-height: 1; margin-bottom: 4px; }
-.stat-label { font-size: 11px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-family: var(--font-display); font-size: 28px; display: block; line-height: 1; margin-bottom: 5px; }
+.stat-label { font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
 
 /* ============================================
    ALERT BOX · próximas demandas
@@ -463,7 +483,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 [data-theme="dark"] .btn { color: var(--text-primary); }
 .btn:hover { background: var(--border); }
 .btn.primary { background: linear-gradient(135deg, var(--c-primary), #2E5BBA); color: white; }
-.btn.primary:hover { box-shadow: 0 4px 12px rgba(1,102,179,0.4); transform: translateY(-1px); }
+.btn.primary:hover { box-shadow: 0 6px 16px rgba(1,102,179,0.45); transform: translateY(-1px); }
 .btn.success { background: #16a34a; color: white; }
 .btn.warn { background: var(--c-orange); color: white; }
 .btn.danger { background: #ef4444; color: white; }
@@ -493,7 +513,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     background: transparent;
     color: var(--text-muted);
 }
-.tabs .btn.tab.active { background: linear-gradient(135deg, var(--c-primary), #2E5BBA); color: white; }
+.tabs .btn.tab.active { background: linear-gradient(135deg, var(--c-primary), #2E5BBA); color: white; box-shadow: 0 4px 12px rgba(1,102,179,0.3); }
 .tabs .btn.tab:hover:not(.active) { background: var(--bg-surface-3); color: var(--text-primary); }
 .more-tab-wrap {
     position: relative;
@@ -579,10 +599,11 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
-    padding: 8px 12px;
+    padding: 9px 14px;
     border-radius: 10px;
     color: white;
     font-weight: 700;
+    letter-spacing: 0.2px;
 }
 .kanban-column-header.backlog { background: var(--st-backlog); }
 .kanban-column-header.todo { background: var(--st-todo); }
@@ -633,15 +654,20 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     padding: 12px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.18s;
     border-left: 4px solid var(--c-primary);
     position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .task-card:hover {
     background: var(--bg-surface);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
+.task-card[data-prio="Urgente"] { border-left-color: var(--pr-urgente); }
+.task-card[data-prio="Alta"]    { border-left-color: var(--pr-alta); }
+.task-card[data-prio="Média"]   { border-left-color: var(--pr-media); }
+.task-card[data-prio="Baixa"]   { border-left-color: var(--pr-baixa); }
 .task-card.sortable-ghost { opacity: 0.4; background: var(--c-primary); }
 .task-card.sortable-drag { transform: rotate(2deg); }
 .task-card.concluida { opacity: 0.7; }
@@ -1308,12 +1334,15 @@ footer strong { color: white; }
 <div id="login-screen" class="login-screen">
     <div class="login-card">
         <div class="login-logo">
-            <span class="hxc-logo size-md">
-                <span class="hxc-hxc">Hxc</span><span class="hxc-tasks">Tasks</span>
-            </span>
+            <div class="hxc-logo-wrap">
+                <span class="hxc-logo size-md">
+                    <span class="hxc-hiper">Hiper</span><span class="hxc-xcap">XCAP</span>
+                </span>
+                <span class="hxc-logo-subtitle">Tasks</span>
+            </div>
         </div>
         <h1>Gestão de Demandas</h1>
-        <p class="login-subtitle">Acesso interno · HXC Tech</p>
+        <p class="login-subtitle">Acesso interno · Time HiperXCAP</p>
         <form onsubmit="handleLogin(event)">
             <div class="form-group">
                 <label class="form-label" style="color:var(--text-secondary)">Usuário ou e-mail</label>
@@ -1350,13 +1379,16 @@ footer strong { color: white; }
     </div>
 
     <div class="brand-pill" style="margin-bottom:18px">
-        <span class="hxc-logo size-sm">
-            <span class="hxc-hxc">Hxc</span><span class="hxc-tasks">Tasks</span>
-        </span>
+        <div class="hxc-logo-wrap">
+            <span class="hxc-logo size-sm">
+                <span class="hxc-hiper">Hiper</span><span class="hxc-xcap">XCAP</span>
+            </span>
+            <span class="hxc-logo-subtitle">Tasks</span>
+        </div>
     </div>
 
     <h1>Gestão de Demandas</h1>
-    <p class="subtitle">Time HXC Tech · tarefas, prazos, prioridades em tempo real</p>
+    <p class="subtitle">Tarefas · Prazos · Prioridades em tempo real</p>
 
     <div class="stats">
         <div class="stat"><span class="stat-value" id="stat-total">0</span><span class="stat-label">Total</span></div>
@@ -1385,7 +1417,6 @@ footer strong { color: white; }
 <div class="tabs">
     <button class="btn tab active" data-vista="kanban" onclick="trocarVista('kanban')">📋 Kanban</button>
     <button class="btn tab" data-vista="calendario" onclick="trocarVista('calendario')">📅 Calendário</button>
-    <button class="btn tab" data-vista="mensal" onclick="trocarVista('mensal')">🗓️ Mensal</button>
     <button class="btn tab" data-vista="minhas" onclick="trocarVista('minhas')">👤 Minhas</button>
     <div class="more-tab-wrap">
         <button class="btn tab more-tab" onclick="toggleMoreMenu(event)">⋯ Mais</button>
@@ -1397,12 +1428,11 @@ footer strong { color: white; }
 
 <div id="view-kanban" class="view active"></div>
 <div id="view-calendario" class="view"></div>
-<div id="view-mensal" class="view"></div>
 <div id="view-minhas" class="view"></div>
 <div id="view-settings" class="view"></div>
 
 <footer>
-    <p><strong>HXC Tasks</strong> · Criado por HXC Tech</p>
+    <p><strong>HiperXCAP Tasks</strong> · v3.0.0 · Gestão de demandas do time</p>
 </footer>
 </div>
 
@@ -1416,7 +1446,7 @@ window.EXPORTED_DATA = null;
 </script>
 <script>
 /* ============================================
-   HXC TASKS · v1 · Application Logic
+   HiperXCAP Tasks · v3 · Application Logic
    ============================================ */
 
 'use strict';
@@ -1441,7 +1471,7 @@ if (MODO_NUVEM) {
 // ============================================
 // CONSTANTS
 // ============================================
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '3.0.0';
 const STORAGE_KEY = 'hxc_tasks_v1';
 const SESSION_KEY = 'hxc_tasks_session_v1';
 const THEME_KEY = 'hxc_tasks_theme';
@@ -1504,6 +1534,7 @@ const estado = {
     tarefaModalId: null,
     filtros: { busca: '' },
     month_view_date: new Date(),
+    cal_modo: 'agenda',
     theme: 'light'
 };
 
@@ -1812,6 +1843,15 @@ function podeExcluirTarefa(t) {
     return false;
 }
 function podeGerenciar() { return estado.usuario_logado && PERMS[estado.usuario_logado.role].manageUsers; }
+// v2: Super Admin manda no Kanban principal; demais só leem o principal.
+function ehAdmin() { return !!(estado.usuario_logado && estado.usuario_logado.role === 'superadmin'); }
+// v2: pode mexer no ANDAMENTO de uma tarefa (mover, concluir, anexar, subtarefa)?
+//     Super Admin pode em qualquer uma; Editor só nas próprias (kanban pessoal).
+function podeAndamento(t) {
+    if (!estado.usuario_logado) return false;
+    if (ehAdmin()) return true;
+    return estado.usuario_logado.role === 'editor' && !!t && t.responsavel_id === estado.usuario_logado.id;
+}
 
 function mostrarLogin() {
     document.body.classList.add('login-mode');
@@ -1909,6 +1949,7 @@ function abrirModal(html, tipo='') {
     document.body.style.overflow = 'hidden';
 }
 function fecharModal() {
+    limparRascunho();
     document.getElementById('modal-overlay').classList.remove('active');
     document.body.style.overflow = 'auto';
     estado.tarefaModalId = null;
@@ -1918,11 +1959,14 @@ function fecharModal() {
 // FILTRAGEM (busca simples)
 // ============================================
 function tarefasFiltradas() {
-    const q = estado.filtros.busca?.toLowerCase();
+    const q = (estado.filtros.busca || '').toLowerCase().trim();
     if (!q) return estado.tarefas;
+    const termos = q.split(/\s+/).filter(Boolean);
     return estado.tarefas.filter(t => {
-        const haystack = [t.id, t.titulo, t.descricao, (t.tags||[]).join(' '), t.prioridade, t.status].join(' ').toLowerCase();
-        return haystack.includes(q);
+        const haystack = [t.id, t.titulo, t.descricao || '', (t.tags||[]).join(' '), t.prioridade, t.status,
+            (t.responsavel_id ? (estado.usuarios.find(u=>u.id===t.responsavel_id)||{}).nome||'' : '')
+        ].join(' ').toLowerCase();
+        return termos.every(termo => haystack.includes(termo));
     });
 }
 
@@ -1935,7 +1979,6 @@ function renderTudo() {
     renderAlerta();
     renderKanban();
     renderCalendario();
-    renderMensal();
     renderMinhas();
     renderSettings();
 }
@@ -2010,7 +2053,7 @@ function renderAlerta() {
 function renderToolbar() {
     const tb = document.getElementById('toolbar-actions');
     if (!tb) return;
-    if (podeEditar()) {
+    if (ehAdmin()) {
         tb.innerHTML = `
             <button class="btn primary" onclick="abrirNovaTarefa()" title="Nova tarefa (N)">➕ Nova tarefa</button>
             <button class="btn danger sm" onclick="logout()" title="Sair">🚪 Sair</button>
@@ -2057,7 +2100,7 @@ function renderKanban() {
             <div class="kanban-list" data-status="${escaparAttr(status)}">`;
         tasks.forEach(t => { html += renderTaskCard(t); });
         html += `</div>`;
-        if (podeEditar()) {
+        if (ehAdmin()) {
             html += `<button class="kanban-add" onclick="abrirNovaTarefaNoStatus('${escaparAttr(status)}')">➕ Nova tarefa</button>`;
         }
         html += `</div>`;
@@ -2065,8 +2108,8 @@ function renderKanban() {
     html += '</div>';
     cont.innerHTML = html;
 
-    if (podeEditar() && typeof Sortable !== 'undefined') {
-        document.querySelectorAll('.kanban-list').forEach(list => {
+    if (ehAdmin() && typeof Sortable !== 'undefined') {
+        document.querySelectorAll('#view-kanban .kanban-list').forEach(list => {
             new Sortable(list, {
                 group: 'kanban',
                 animation: 200,
@@ -2103,7 +2146,7 @@ function renderTaskCard(t) {
     if ((t.anexos || []).length > 0) meta.push(`<span>🔗 ${t.anexos.length}</span>`);
 
     return `
-    <div class="task-card${t.concluida?' concluida':''}" data-id="${escaparAttr(t.id)}" onclick="abrirTarefa('${t.id}')">
+    <div class="task-card${t.concluida?' concluida':''}" data-id="${escaparAttr(t.id)}" data-prio="${escaparAttr(t.prioridade)}" onclick="abrirTarefa('${t.id}')">
         <div class="task-card-top">
             <span class="task-id">${escapar(t.id)}</span>
             <span class="task-prio ${prio}">${PRIORITY_EMOJI[t.prioridade]} ${escapar(t.prioridade)}</span>
@@ -2135,6 +2178,7 @@ function renderPrazoBadge(t) {
 function mudarStatus(id, novoStatus) {
     const t = estado.tarefas.find(x => x.id === id);
     if (!t || !novoStatus || t.status === novoStatus) return;
+    if (!podeAndamento(t)) { toast('Você só pode mover as suas próprias tarefas', 'warn'); renderTudo(); return; }
     const antigo = t.status;
     t.status = novoStatus;
     if (novoStatus === 'Concluída') t.concluida = true;
@@ -2149,6 +2193,25 @@ function mudarStatus(id, novoStatus) {
 // ============================================
 function renderCalendario() {
     const cont = document.getElementById('view-calendario');
+    if (!cont) return;
+    const modo = estado.cal_modo || 'agenda';
+    cont.innerHTML = `
+        <div class="cal-toggle" style="display:flex;gap:8px;margin-bottom:16px">
+            <button class="btn tab ${modo==='agenda'?'active':''}" onclick="setCalModo('agenda')">📋 Agenda</button>
+            <button class="btn tab ${modo==='mes'?'active':''}" onclick="setCalModo('mes')">🗓️ Mês</button>
+        </div>
+        <div id="cal-conteudo"></div>`;
+    if (modo === 'mes') renderCalMes(); else renderCalAgenda();
+}
+
+function setCalModo(modo) {
+    estado.cal_modo = modo;
+    renderCalendario();
+}
+
+// --- Visão AGENDA (lista cronológica por dia) ---
+function renderCalAgenda() {
+    const cont = document.getElementById('cal-conteudo');
     if (!cont) return;
     const tsAll = tarefasFiltradas().filter(t => t.prazo);
     if (tsAll.length === 0) {
@@ -2185,11 +2248,9 @@ function renderCalendario() {
     cont.innerHTML = html;
 }
 
-// ============================================
-// CALENDÁRIO MENSAL
-// ============================================
-function renderMensal() {
-    const cont = document.getElementById('view-mensal');
+// --- Visão MÊS (grade do mês) ---
+function renderCalMes() {
+    const cont = document.getElementById('cal-conteudo');
     if (!cont) return;
     const date = estado.month_view_date;
     const year = date.getFullYear();
@@ -2252,7 +2313,7 @@ function renderMensal() {
 function navegarMes(delta) {
     const d = estado.month_view_date;
     estado.month_view_date = new Date(d.getFullYear(), d.getMonth() + delta, 1);
-    renderMensal();
+    renderCalMes();
 }
 
 // ============================================
@@ -2261,32 +2322,57 @@ function navegarMes(delta) {
 function renderMinhas() {
     const cont = document.getElementById('view-minhas');
     if (!cont) return;
-    const ts = tarefasFiltradas().filter(t => t.responsavel_id === estado.usuario_logado?.id);
+    const eu = estado.usuario_logado;
+    const ts = tarefasFiltradas().filter(t => t.responsavel_id === eu?.id);
+
+    // Cabeçalho do board pessoal
+    let html = `<div class="minhas-section">
+        <h2>👤 Meu Kanban</h2>
+        <p class="helper" style="margin-bottom:14px">Suas tarefas. Arraste entre as colunas pra atualizar o andamento — a mudança reflete no quadro principal automaticamente.</p>`;
+
     if (ts.length === 0) {
-        cont.innerHTML = `<div class="minhas-section"><h2>👤 Minhas Tarefas</h2><div class="empty-state"><span class="emoji">🎉</span>Nada atribuído pra você no momento!<br>Use a aba Kanban pra criar ou se atribuir a uma tarefa.</div></div>`;
+        html += `<div class="empty-state"><span class="emoji">🎉</span>Nada atribuído pra você no momento!<br>Quando o Super Admin te atribuir uma tarefa, ela aparece aqui.</div></div>`;
+        cont.innerHTML = html;
         return;
     }
-    // Agrupa por status
-    let html = '<div class="minhas-section"><h2>👤 Minhas Tarefas</h2>';
-    STATUSES.forEach(s => {
-        const tasks = ts.filter(t => t.status === s);
-        if (tasks.length === 0) return;
-        html += `<h3 style="margin-top:18px;margin-bottom:10px;font-family:var(--font-body);font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">${STATUS_EMOJI[s]} ${escapar(s)} (${tasks.length})</h3>`;
-        tasks.forEach(t => {
-            html += `<div class="minha-tarefa${t.concluida?' concluida':''}" onclick="abrirTarefa('${t.id}')">
-                <div class="minha-tarefa-top">
-                    <span class="minha-tarefa-titulo">${escapar(t.id)} · ${escapar(t.titulo)}</span>
-                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-                        <span class="task-prio ${PRIORITY_CLASS[t.prioridade]}">${PRIORITY_EMOJI[t.prioridade]} ${escapar(t.prioridade)}</span>
-                        ${renderPrazoBadge(t)}
-                    </div>
-                </div>
-                ${t.descricao ? `<div style="font-size:12px;color:var(--text-muted);margin-top:4px">${escapar(t.descricao.substring(0,150))}${t.descricao.length>150?'...':''}</div>` : ''}
-            </div>`;
-        });
+
+    // Board com as 5 colunas, só com as tarefas do usuário
+    html += '<div class="kanban-board">';
+    STATUSES.forEach(status => {
+        const tasks = ts.filter(t => t.status === status);
+        const cls = STATUS_CLASS[status];
+        html += `
+        <div class="kanban-column">
+            <div class="kanban-column-header ${cls}">
+                <span class="kanban-column-title">${STATUS_EMOJI[status]} ${escapar(status)}</span>
+                <span class="kanban-column-count">${tasks.length}</span>
+            </div>
+            <div class="kanban-list pessoal" data-status="${escaparAttr(status)}">`;
+        tasks.forEach(t => { html += renderTaskCard(t); });
+        html += `</div>
+        </div>`;
     });
-    html += '</div>';
+    html += '</div></div>';
     cont.innerHTML = html;
+
+    // Drag habilitado se o usuário pode mexer no andamento (admin ou editor — são as próprias tarefas)
+    const podeArrastar = ehAdmin() || (eu && eu.role === 'editor');
+    if (podeArrastar && typeof Sortable !== 'undefined') {
+        document.querySelectorAll('#view-minhas .kanban-list.pessoal').forEach(list => {
+            new Sortable(list, {
+                group: 'kanban-pessoal',
+                animation: 200,
+                handle: '.task-card',
+                draggable: '.task-card',
+                ghostClass: 'sortable-ghost',
+                onEnd: function(ev) {
+                    const id = ev.item.getAttribute('data-id');
+                    const novoStatus = ev.to.getAttribute('data-status');
+                    mudarStatus(id, novoStatus);
+                }
+            });
+        });
+    }
 }
 
 // ============================================
@@ -2303,7 +2389,7 @@ function renderSettings() {
     cont.innerHTML = `
         <div class="settings-section">
             <h2>👥 Usuários e Permissões</h2>
-            <p class="helper">Super Admin gerencia o time. Editor cria e edita tarefas. Viewer só visualiza.</p>
+            <p class="helper">Super Admin manda no quadro principal. Editor mexe só nas próprias tarefas (Kanban pessoal). Viewer só visualiza.</p>
             <div class="users-list">
                 ${estado.usuarios.map(u => {
                     const ehVoce = u.id === meId;
@@ -2330,8 +2416,10 @@ function renderSettings() {
             <p class="helper">${MODO_NUVEM ? '<strong style="color:#16a34a">✓ Modo nuvem ativo:</strong> tudo sincroniza em tempo real.' : '<strong style="color:#f59e0b">⚠️ Modo local:</strong> dados ficam só neste navegador. Configure o Supabase pra ativar a nuvem.'}</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
                 ${MODO_NUVEM ? '<button class="btn primary" onclick="sincronizarLocalParaNuvem()">📤 Subir cache local para nuvem</button>' : ''}
-                <button class="btn" onclick="exportarJSON()">💾 Exportar JSON (backup)</button>
+                <button class="btn" onclick="exportarJSON()">💾 Exportar JSON (backup de dados)</button>
+                <button class="btn" onclick="baixarHTML()">📥 Baixar HTML (código-fonte da v${APP_VERSION})</button>
             </div>
+            <p class="helper" style="margin-top:10px">O <strong>JSON</strong> guarda os dados (tarefas, comentários). O <strong>HTML</strong> guarda o código do app — use-o como ponto de partida pra próximas atualizações ou como backup da versão no ar.</p>
         </div>
         <div class="settings-section">
             <h2>⚠️ Zona de risco</h2>
@@ -2359,6 +2447,34 @@ async function sincronizarLocalParaNuvem() {
         toast('Erro: ' + e.message, 'danger');
         setStatusConexao('error');
     }
+}
+
+async function baixarHTML() {
+    // Baixa o CÓDIGO-FONTE limpo do app (o arquivo servido), ideal pra próximas atualizações.
+    // Fallback: se não conseguir buscar (ex.: aberto via file://), usa o DOM atual.
+    const nome = `HXC_Tasks_v${APP_VERSION}.html`;
+    try {
+        const resp = await fetch(window.location.href, { cache: 'no-store' });
+        if (!resp.ok) throw new Error('fetch falhou');
+        const html = await resp.text();
+        if (!/<html[\s>]/i.test(html)) throw new Error('conteúdo inesperado');
+        baixarTexto(html, nome);
+        toast('Código-fonte baixado ✓', 'success');
+    } catch (e) {
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        baixarTexto(html, nome);
+        toast('Baixado (cópia do estado atual) ✓', 'success');
+    }
+}
+
+function baixarTexto(texto, nome) {
+    const blob = new Blob([texto], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nome;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 function exportarJSON() {
@@ -2409,7 +2525,7 @@ function editarUsuario(id) {
             <div class="form-group"><label class="form-label">Perfil</label>
                 <select id="user-role" class="form-select">
                     <option value="viewer" ${u.role==='viewer'?'selected':''}>Viewer · só leitura</option>
-                    <option value="editor" ${u.role==='editor'?'selected':''}>Editor · cria/edita</option>
+                    <option value="editor" ${u.role==='editor'?'selected':''}>Editor · mexe nas próprias</option>
                     <option value="superadmin" ${u.role==='superadmin'?'selected':''}>Super Admin · controle total</option>
                 </select>
             </div>
@@ -2451,7 +2567,7 @@ function novoUsuario() {
                     <label class="form-label">Perfil *</label>
                     <select id="new-user-role" class="form-select">
                         <option value="viewer">Viewer · só leitura</option>
-                        <option value="editor" selected>Editor · cria/edita tarefas</option>
+                        <option value="editor" selected>Editor · mexe nas próprias tarefas</option>
                         <option value="superadmin">Super Admin · controle total</option>
                     </select>
                 </div>
@@ -2460,14 +2576,10 @@ function novoUsuario() {
                     <input type="password" id="new-user-senha" class="form-input" placeholder="Mínimo 8 caracteres">
                 </div>
             </div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:-8px;margin-bottom:14px">A pessoa pode trocar a senha depois pelo Supabase (esquecer senha por e-mail).</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:-8px;margin-bottom:14px">A pessoa pode trocar a senha depois (esquecer senha por e-mail).</div>
             ${MODO_NUVEM ? `
-            <div style="background:#fef3c7;padding:12px;border-radius:8px;border-left:4px solid #f59e0b;font-size:12px;color:#78350f;line-height:1.5">
-                ⚠️ <strong>Importante:</strong> se o seu Supabase exige confirmação de e-mail (padrão), o novo usuário receberá um link no e-mail e <strong>só conseguirá logar depois de clicar</strong>. Pra desabilitar e o cara logar direto:
-                <ol style="margin-top:6px;margin-left:18px;list-style:decimal">
-                    <li>Vá no Supabase → <strong>Authentication</strong> → <strong>Providers</strong> → <strong>Email</strong></li>
-                    <li>Desmarque <strong>"Confirm email"</strong> → Save</li>
-                </ol>
+            <div style="background:rgba(22,163,74,0.08);padding:12px;border-radius:8px;border-left:4px solid #16a34a;font-size:12px;color:#166534;line-height:1.5">
+                ✓ <strong>Pronto pra usar:</strong> o membro é criado já confirmado e <strong>entra na hora</strong> com e-mail e senha — sem precisar confirmar e-mail. Você continua logado normalmente.
             </div>` : `
             <div style="background:rgba(1,102,179,0.06);padding:10px 12px;border-radius:8px;border-left:4px solid var(--c-primary);font-size:12px;color:var(--c-primary)">
                 💡 Modo local: o usuário é salvo só neste navegador. Pra time real, configure o Supabase.
@@ -2500,39 +2612,31 @@ async function salvarNovoUsuario() {
 
     if (MODO_NUVEM && sb) {
         try {
-            // 1. Salva sessão do admin atual
-            const { data: { session: adminSession } } = await sb.auth.getSession();
-            if (!adminSession) {
-                toast('Erro: sessão expirou', 'danger');
+            // Pega o token do admin logado pra autenticar a chamada
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                toast('Sua sessão expirou. Faça login de novo.', 'danger');
                 if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
                 return;
             }
-
-            // 2. SignUp do novo usuário (vai trocar a sessão temporariamente)
-            const { data, error } = await sb.auth.signUp({
-                email,
-                password: senha,
-                options: { data: { nome, role, avatar } }
+            // Chama a função serverless segura: cria o usuário JÁ confirmado,
+            // sem deslogar você e sem depender de "Confirm email".
+            const resp = await fetch('/api/create-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ nome, email, senha, role, avatar })
             });
-
-            if (error) {
-                toast('Erro: ' + error.message, 'danger');
+            let out = {};
+            try { out = await resp.json(); } catch (_) {}
+            if (!resp.ok) {
+                toast('Erro: ' + (out.error || 'não foi possível criar o usuário'), 'danger');
                 if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
                 return;
             }
-
-            // 3. Restaura sessão do admin (volta a ser super admin)
-            await sb.auth.setSession({
-                access_token: adminSession.access_token,
-                refresh_token: adminSession.refresh_token
-            });
-
-            // 4. Atualiza role e dados via update (caso trigger não tenha pego o metadata)
-            if (data.user) {
-                await sb.from('app_users').update({ nome, role, avatar }).eq('id', data.user.id);
-            }
-
-            // 5. Recarrega lista
+            // Recarrega a lista de usuários
             const { data: usersData } = await sb.from('app_users').select('*').order('role');
             if (usersData) {
                 estado.usuarios = usersData.map(u => ({
@@ -2540,14 +2644,12 @@ async function salvarNovoUsuario() {
                 }));
                 salvar();
             }
-
-            const precisaConfirmar = data.user && !data.user.email_confirmed_at;
-            toast(`Usuário ${nome} criado ✓${precisaConfirmar ? ' · confirmação pendente no e-mail' : ''}`, 'success');
+            toast(`Usuário ${nome} criado ✓ — já pode logar com e-mail e senha`, 'success');
             fecharModal();
             renderSettings();
         } catch (e) {
             console.error(e);
-            toast('Erro: ' + e.message, 'danger');
+            toast('Erro de conexão: ' + e.message + ' · confira se a função /api/create-user foi publicada no Vercel.', 'danger');
             if (btn) { btn.disabled = false; btn.textContent = '➕ Criar usuário'; }
         }
         return;
@@ -2668,13 +2770,13 @@ function abrirTarefaModal(t) {
                 <div class="subtarefas-list">
                     ${(t.subtarefas || []).map((s, i) => `
                         <div class="subtarefa-item ${s.feito?'feita':''}">
-                            <input type="checkbox" ${s.feito?'checked':''} ${podeEditar()?`onchange="toggleSubtarefa('${t.id}', ${i}, this.checked)"`:'disabled'}>
+                            <input type="checkbox" ${s.feito?'checked':''} ${podeAndamento(t)?`onchange="toggleSubtarefa('${t.id}', ${i}, this.checked)"`:'disabled'}>
                             <span class="subtarefa-texto">${escapar(s.texto)}</span>
-                            ${podeEditar() ? `<button class="subtarefa-remove" onclick="removerSubtarefa('${t.id}', ${i})" title="Remover">✕</button>` : ''}
+                            ${podeAndamento(t) ? `<button class="subtarefa-remove" onclick="removerSubtarefa('${t.id}', ${i})" title="Remover">✕</button>` : ''}
                         </div>
                     `).join('')}
                 </div>
-                ${podeEditar() ? `
+                ${podeAndamento(t) ? `
                 <div class="subtarefa-add">
                     <input type="text" class="form-input" id="nova-subt-${t.id}" placeholder="+ Adicionar subtarefa" onkeydown="if(event.key==='Enter') adicionarSubtarefa('${t.id}')">
                     <button class="btn" onclick="adicionarSubtarefa('${t.id}')">+</button>
@@ -2687,11 +2789,11 @@ function abrirTarefaModal(t) {
                     ${(t.anexos || []).map((a, i) => `
                         <div class="subtarefa-item">
                             <span class="subtarefa-texto"><a href="${escaparAttr(a.url)}" target="_blank" rel="noopener" style="color:var(--c-primary);text-decoration:none">${escapar(a.titulo || a.url)}</a></span>
-                            ${podeEditar() ? `<button class="subtarefa-remove" onclick="removerAnexo('${t.id}', ${i})" title="Remover">✕</button>` : ''}
+                            ${podeAndamento(t) ? `<button class="subtarefa-remove" onclick="removerAnexo('${t.id}', ${i})" title="Remover">✕</button>` : ''}
                         </div>
                     `).join('')}
                 </div>
-                ${podeEditar() ? `
+                ${podeAndamento(t) ? `
                 <div class="subtarefa-add">
                     <input type="text" class="form-input" id="anexo-titulo-${t.id}" placeholder="Título (opcional)" style="flex:0 0 30%">
                     <input type="text" class="form-input" id="anexo-url-${t.id}" placeholder="https://...">
@@ -2720,8 +2822,8 @@ function abrirTarefaModal(t) {
             </div>` : ''}
         </div>
         <div class="modal-actions">
-            ${podeEditar() ? `<button class="btn warn" onclick="abrirEditarTarefa('${t.id}')">✏️ Editar</button>` : ''}
-            ${podeExcluirTarefa(t) ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
+            ${ehAdmin() ? `<button class="btn warn" onclick="abrirEditarTarefa('${t.id}')">✏️ Editar</button>` : ''}
+            ${ehAdmin() ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
             <button class="btn primary" onclick="fecharModal()">Fechar</button>
         </div>
     `, 'wide');
@@ -2837,11 +2939,11 @@ async function postarComentario(tid) {
 // CRIAR / EDITAR / EXCLUIR TAREFA
 // ============================================
 function abrirNovaTarefa() {
-    if (!podeEditar()) return;
+    if (!ehAdmin()) return;
     abrirEditarTarefa(null, true, null);
 }
 function abrirNovaTarefaNoStatus(status) {
-    if (!podeEditar()) return;
+    if (!ehAdmin()) return;
     abrirEditarTarefa(null, true, status);
 }
 function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
@@ -2862,6 +2964,8 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
         if (!t) return;
     }
     window._editandoTags = [...(t.tags || [])];
+    window._editandoAnexos = [...(t.anexos || [])];
+    window._editandoId = t.id;
 
     const usersOpts = ['<option value="">— sem responsável —</option>',
         ...estado.usuarios.map(u => `<option value="${escaparAttr(u.id)}" ${t.responsavel_id===u.id?'selected':''}>${escapar(u.nome)} (${ROLE_LABELS[u.role]})</option>`)
@@ -2919,14 +3023,29 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
                 <div class="multi-select-wrap" id="tags-wrap" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:2px solid var(--border);border-radius:8px;background:var(--bg-input);min-height:44px"></div>
                 <input type="text" id="tag-input" class="form-input" style="margin-top:6px" placeholder="Digite uma tag e aperte Enter (ex: bug, design, urgente)" onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarTag();}">
             </div>
+
+            <div class="form-group">
+                <label class="form-label">🔗 Links / Anexos</label>
+                <div id="anexos-wrap-form" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+                <div style="display:flex;gap:6px">
+                    <input type="text" id="form-anexo-titulo" class="form-input" placeholder="Título do link (opcional)" style="flex:0 0 35%">
+                    <input type="text" id="form-anexo-url" class="form-input" placeholder="https://...">
+                    <button type="button" class="btn primary sm" onclick="adicionarAnexoForm()" title="Adicionar link">+</button>
+                </div>
+                <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block">Cole a URL e pressione + para adicionar. Você pode adicionar quantos links quiser.</small>
+            </div>
+
+            <div id="draft-indicator" style="display:none;font-size:11px;color:var(--text-muted);text-align:right;padding-top:4px">💾 Rascunho salvo</div>
         </div>
         <div class="modal-actions">
-            ${!novaTarefa && podeExcluirTarefa(t) ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
+            ${!novaTarefa && ehAdmin() ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
             <button class="btn" onclick="fecharModal()">Cancelar</button>
             <button class="btn success" onclick="salvarTarefa(${novaTarefa})">${novaTarefa?'➕ Criar':'💾 Salvar'}</button>
         </div>
     `);
     redesenharTags();
+    redesenharAnexosForm();
+    instalarAutosave();
 }
 
 function redesenharTags() {
@@ -2969,17 +3088,20 @@ function salvarTarefa(novaTarefa) {
     };
     if (novaTarefa) {
         dados.criado_por = estado.usuario_logado?.id || null;
+        dados.anexos = window._editandoAnexos || [];
         estado.tarefas.push(dados);
+        limparRascunho();
         toast('Tarefa criada ✓', 'success');
     } else {
         const idx = estado.tarefas.findIndex(x => x.id === id);
         if (idx === -1) return;
-        // Mantém subtarefas e anexos
+        // Mantém subtarefas; usa anexos do form (podem ter sido editados)
         dados.subtarefas = estado.tarefas[idx].subtarefas || [];
-        dados.anexos = estado.tarefas[idx].anexos || [];
+        dados.anexos = window._editandoAnexos || estado.tarefas[idx].anexos || [];
         dados.criado_por = estado.tarefas[idx].criado_por;
         dados.concluida = dados.status === 'Concluída';
         estado.tarefas[idx] = dados;
+        limparRascunho();
         toast('Atualizada ✓', 'success');
     }
     dbUpsertTarefa(dados);
@@ -2989,7 +3111,7 @@ function salvarTarefa(novaTarefa) {
 
 async function excluirTarefa(id) {
     const t = estado.tarefas.find(x => x.id === id);
-    if (!t || !podeExcluirTarefa(t)) return;
+    if (!t || !ehAdmin()) return;
     if (!confirm(`Excluir "${t.titulo}"? Não dá pra desfazer.`)) return;
     estado.tarefas = estado.tarefas.filter(x => x.id !== id);
     await dbDeleteTarefa(id);
@@ -3003,7 +3125,7 @@ async function excluirTarefa(id) {
 // ============================================
 function trocarVista(vista) {
     estado.vista_atual = vista;
-    const principais = ['kanban','calendario','mensal','minhas'];
+    const principais = ['kanban','calendario','minhas'];
     document.querySelectorAll('.btn.tab').forEach(t => {
         const v = t.getAttribute('data-vista');
         const ehMais = t.classList.contains('more-tab');
@@ -3016,7 +3138,7 @@ function trocarVista(vista) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const v = document.getElementById('view-' + vista);
     if (v) v.classList.add('active');
-    if (vista === 'mensal') renderMensal();
+    if (vista === 'calendario') renderCalendario();
     if (vista === 'settings' && podeGerenciar()) renderSettings();
     if (vista === 'minhas') renderMinhas();
 }
@@ -3041,9 +3163,9 @@ function instalarAtalhos() {
         if (dentroInput) return;
         if (e.key === '/') { document.getElementById('search-input')?.focus(); e.preventDefault(); }
         else if (e.key.toLowerCase() === 't') alternarTema();
-        else if (e.key.toLowerCase() === 'n' && podeEditar()) abrirNovaTarefa();
-        else if (['1','2','3','4','5'].includes(e.key)) {
-            const map = ['kanban','calendario','mensal','minhas','settings'];
+        else if (e.key.toLowerCase() === 'n' && ehAdmin()) abrirNovaTarefa();
+        else if (['1','2','3','4'].includes(e.key)) {
+            const map = ['kanban','calendario','minhas','settings'];
             const v = map[parseInt(e.key,10) - 1];
             if (v) trocarVista(v);
         }
@@ -3072,6 +3194,138 @@ document.addEventListener('click', e => {
         more.classList.remove('open');
     }
 });
+
+
+// ============================================
+// ANEXOS NO FORMULÁRIO DE CRIAÇÃO/EDIÇÃO
+// ============================================
+function redesenharAnexosForm() {
+    const w = document.getElementById('anexos-wrap-form');
+    if (!w) return;
+    const anexos = window._editandoAnexos || [];
+    if (anexos.length === 0) {
+        w.innerHTML = '<span style="color:var(--text-muted);font-size:12px;font-style:italic">Nenhum link adicionado</span>';
+        return;
+    }
+    w.innerHTML = anexos.map((a, i) => `
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg-surface-2);padding:7px 10px;border-radius:8px">
+            <span style="font-size:14px">🔗</span>
+            <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                <a href="${escaparAttr(a.url)}" target="_blank" rel="noopener" style="color:var(--c-primary);text-decoration:none" title="${escaparAttr(a.url)}">${escapar(a.titulo || a.url)}</a>
+            </span>
+            <button type="button" class="btn danger sm" onclick="removerAnexoForm(${i})" title="Remover" style="padding:3px 8px;font-size:11px">✕</button>
+        </div>
+    `).join('');
+}
+
+function adicionarAnexoForm() {
+    const urlEl = document.getElementById('form-anexo-url');
+    const titEl = document.getElementById('form-anexo-titulo');
+    if (!urlEl || !urlEl.value.trim()) { toast('Informe a URL do link', 'warn'); urlEl?.focus(); return; }
+    let url = urlEl.value.trim();
+    if (!url.startsWith('http')) url = 'https://' + url;
+    const titulo = titEl.value.trim() || url;
+    window._editandoAnexos = window._editandoAnexos || [];
+    window._editandoAnexos.push({ titulo, url });
+    urlEl.value = '';
+    titEl.value = '';
+    redesenharAnexosForm();
+    salvarRascunho();
+}
+
+function removerAnexoForm(idx) {
+    if (!window._editandoAnexos) return;
+    window._editandoAnexos.splice(idx, 1);
+    redesenharAnexosForm();
+    salvarRascunho();
+}
+
+// ============================================
+// AUTO-SAVE RASCUNHO (evita perda de conteúdo)
+// ============================================
+const DRAFT_KEY = 'hxc_tasks_draft_v1';
+let _draftTimer = null;
+
+function instalarAutosave() {
+    const campos = ['edit-titulo', 'edit-descricao', 'edit-status', 'edit-prioridade', 'edit-responsavel', 'edit-prazo'];
+    campos.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', agendarSalvarRascunho);
+        el.addEventListener('change', agendarSalvarRascunho);
+    });
+    // Verificar se há rascunho para restaurar
+    const id = document.getElementById('edit-id')?.value;
+    if (id) restaurarRascunho(id);
+}
+
+function agendarSalvarRascunho() {
+    clearTimeout(_draftTimer);
+    _draftTimer = setTimeout(salvarRascunho, 800);
+}
+
+function salvarRascunho() {
+    const id = document.getElementById('edit-id')?.value;
+    if (!id) return;
+    const draft = {
+        id,
+        titulo: document.getElementById('edit-titulo')?.value || '',
+        descricao: document.getElementById('edit-descricao')?.value || '',
+        status: document.getElementById('edit-status')?.value || '',
+        prioridade: document.getElementById('edit-prioridade')?.value || '',
+        responsavel_id: document.getElementById('edit-responsavel')?.value || '',
+        prazo: document.getElementById('edit-prazo')?.value || '',
+        tags: window._editandoTags || [],
+        anexos: window._editandoAnexos || [],
+        saved_at: Date.now()
+    };
+    try {
+        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        const ind = document.getElementById('draft-indicator');
+        if (ind) {
+            ind.style.display = 'block';
+            ind.textContent = '💾 Rascunho salvo automaticamente';
+        }
+    } catch (e) { /* storage indisponível */ }
+}
+
+function restaurarRascunho(id) {
+    try {
+        const raw = sessionStorage.getItem(DRAFT_KEY);
+        if (!raw) return;
+        const draft = JSON.parse(raw);
+        // Só restaura se for o mesmo ID e foi salvo há menos de 2h
+        if (draft.id !== id || Date.now() - draft.saved_at > 7200000) return;
+        // Preenche os campos
+        const set = (fieldId, val) => {
+            const el = document.getElementById(fieldId);
+            if (el && val !== undefined && val !== null) el.value = val;
+        };
+        set('edit-titulo', draft.titulo);
+        set('edit-descricao', draft.descricao);
+        set('edit-status', draft.status);
+        set('edit-prioridade', draft.prioridade);
+        set('edit-responsavel', draft.responsavel_id);
+        set('edit-prazo', draft.prazo);
+        if (Array.isArray(draft.tags)) { window._editandoTags = draft.tags; redesenharTags(); }
+        if (Array.isArray(draft.anexos)) { window._editandoAnexos = draft.anexos; redesenharAnexosForm(); }
+        const ind = document.getElementById('draft-indicator');
+        if (ind) {
+            ind.style.display = 'block';
+            const quando = new Date(draft.saved_at).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+            ind.textContent = `📋 Rascunho restaurado (salvo às ${quando}) — edite e salve normalmente`;
+            ind.style.color = 'var(--c-orange)';
+        }
+    } catch (e) { /* ignorar */ }
+}
+
+function limparRascunho() {
+    try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    clearTimeout(_draftTimer);
+    window._editandoAnexos = [];
+    window._editandoTags = [];
+    window._editandoId = null;
+}
 
 // ============================================
 // INIT
