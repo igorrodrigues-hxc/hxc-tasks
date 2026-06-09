@@ -3424,12 +3424,6 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
             </div>
 
             <div class="form-group">
-                <label class="form-label">🏷️ Tags</label>
-                <div class="multi-select-wrap" id="tags-wrap" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:2px solid var(--border);border-radius:8px;background:var(--bg-input);min-height:44px"></div>
-                <input type="text" id="tag-input" class="form-input" style="margin-top:6px" placeholder="Digite uma tag e aperte Enter (ex: bug, design, urgente)" onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarTag();}">
-            </div>
-
-            <div class="form-group">
                 <label class="form-label">☑️ Subtarefas</label>
                 <div class="form-subt-list" id="form-subt-list"></div>
                 <div class="form-subt-add">
@@ -3449,6 +3443,12 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
                     <input type="file" id="form-anexo-file" style="display:none" onchange="uploadAnexoArquivo(event)">
                 </div>
                 <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block">Cole uma URL e clique + para adicionar um link, ou clique em 📎 Arquivo para anexar um documento do seu computador.</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">🏷️ Tags</label>
+                <div class="multi-select-wrap" id="tags-wrap" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:2px solid var(--border);border-radius:8px;background:var(--bg-input);min-height:44px"></div>
+                <input type="text" id="tag-input" class="form-input" style="margin-top:6px" placeholder="Digite uma tag e aperte Enter (ex: bug, design, urgente)" onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarTag();}">
             </div>
 
             <div id="draft-indicator" style="display:none;font-size:11px;color:var(--text-muted);text-align:right;padding-top:4px">💾 Rascunho salvo</div>
