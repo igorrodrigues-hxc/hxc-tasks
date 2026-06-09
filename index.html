@@ -1378,29 +1378,29 @@ footer strong { color: white; }
 /* ============================================
    v4 · QUICK COMPLETE BUTTON
 ============================================ */
-.task-card { overflow: visible; }
 .quick-done-btn {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 26px;
-    height: 26px;
+    bottom: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--st-done);
     color: white;
-    border: 2px solid var(--bg-surface);
-    font-size: 13px;
+    border: none;
+    font-size: 14px;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.15s;
-    z-index: 10;
+    box-shadow: 0 2px 8px rgba(22,163,74,0.4);
+    transition: transform 0.15s, background 0.15s;
+    z-index: 5;
     line-height: 1;
+    font-weight: 900;
 }
 .task-card:hover .quick-done-btn { display: flex; }
-.quick-done-btn:hover { transform: scale(1.2); background: #15803d; }
+.quick-done-btn:hover { transform: scale(1.15); background: #15803d; }
 
 /* ============================================
    v4 · COLUMN PROGRESS BAR
@@ -1490,6 +1490,67 @@ footer strong { color: white; }
 }
 .ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(1,102,179,0.6); }
 .ai-fab.open { background: linear-gradient(135deg, #475569, #334155); }
+
+.ai-notif-dot {
+    position: absolute;
+    top: 0; right: 0;
+    width: 12px; height: 12px;
+    background: var(--c-orange);
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+    animation: pulse-notif 2s ease-in-out infinite;
+}
+.ai-notif-dot.visible { display: block; }
+@keyframes pulse-notif {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.ai-greeting-bubble {
+    position: fixed;
+    bottom: 90px;
+    right: 28px;
+    width: 280px;
+    background: var(--bg-surface);
+    border-radius: 16px 16px 4px 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    z-index: 901;
+    display: none;
+    animation: ai-slide-up 0.3s ease-out;
+}
+.ai-greeting-bubble.visible { display: block; }
+.ai-greeting-bubble-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--c-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ai-greeting-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 14px; padding: 0;
+    line-height: 1;
+}
+.ai-greeting-body {
+    font-size: 12px;
+    color: var(--text-primary);
+    line-height: 1.55;
+}
+.ai-greeting-footer {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--c-primary);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
 
 .ai-panel {
     position: fixed;
@@ -1704,11 +1765,22 @@ footer strong { color: white; }
 <div id="view-settings" class="view"></div>
 
 <footer>
-    <p><strong>HiperXCAP Tasks</strong> · v4.0.0 · Gestão de demandas do time</p>
+    <p><strong>HiperXCAP Tasks</strong> · v4.2.0 · Gestão de demandas do time</p>
 </footer>
 
 <!-- AI ASSISTANT -->
-<button class="ai-fab" id="ai-fab" onclick="toggleAI()" title="Assistente HXC" style="display:none">🤖</button>
+<button class="ai-fab" id="ai-fab" onclick="toggleAI()" title="Assistente HXC" style="display:none">
+    🤖
+    <span class="ai-notif-dot" id="ai-notif-dot"></span>
+</button>
+<div class="ai-greeting-bubble" id="ai-greeting-bubble">
+    <div class="ai-greeting-header">
+        🤖 Assistente HXC
+        <button class="ai-greeting-close" onclick="dispensarGreeting()">✕</button>
+    </div>
+    <div class="ai-greeting-body" id="ai-greeting-body">...</div>
+    <div class="ai-greeting-footer" onclick="abrirAssistente()">Conversar com o assistente →</div>
+</div>
 <div class="ai-panel" id="ai-panel">
     <div class="ai-panel-header"><span>🤖</span> Assistente HXC</div>
     <div class="ai-messages" id="ai-messages"></div>
@@ -1755,7 +1827,7 @@ if (MODO_NUVEM) {
 // ============================================
 // CONSTANTS
 // ============================================
-const APP_VERSION = '4.0.0';
+const APP_VERSION = '4.2.0';
 const STORAGE_KEY = 'hxc_tasks_v1';
 const SESSION_KEY = 'hxc_tasks_session_v1';
 const THEME_KEY = 'hxc_tasks_theme';
@@ -2247,6 +2319,12 @@ function abrirModal(html, tipo='') {
     document.body.style.overflow = 'hidden';
 }
 function fecharModal() {
+    // Se fechando um form de nova tarefa sem clicar em Criar/Descartar,
+    // salva os dados no card de rascunho (acontece com X ou clique fora)
+    if (window._ehNovaTarefa && !window._finalizandoTarefa) {
+        atualizarRascunhoCard();
+    }
+    window._finalizandoTarefa = false;
     limparRascunho();
     document.getElementById('modal-overlay').classList.remove('active');
     document.body.style.overflow = 'auto';
@@ -2398,13 +2476,10 @@ function renderKanban() {
     const cont = document.getElementById('view-kanban');
     if (!cont) return;
     const ts = tarefasFiltradas();
-    const totalAll = estado.tarefas.filter(t => !t.is_rascunho).length;
     let html = '<div class="kanban-board">';
     STATUSES.forEach(status => {
         const tasks = ts.filter(t => t.status === status && !t.is_rascunho);
-        const totalInStatus = estado.tarefas.filter(t => t.status === status && !t.is_rascunho).length;
         const cls = STATUS_CLASS[status];
-        const pct = totalAll > 0 ? Math.round((totalInStatus / totalAll) * 100) : 0;
         html += `
         <div class="kanban-column">
             <div class="kanban-column-header ${cls}">
@@ -2413,7 +2488,6 @@ function renderKanban() {
                         <span class="kanban-column-title">${STATUS_EMOJI[status]} ${escapar(status)}</span>
                         <span class="kanban-column-count">${tasks.length}</span>
                     </div>
-                    <div class="kanban-progress-bar"><div class="kanban-progress-fill" style="width:${pct}%"></div></div>
                 </div>
             </div>
             <div class="kanban-list" data-status="${escaparAttr(status)}">`;
@@ -2480,8 +2554,8 @@ function renderTaskCard(t) {
     if ((t.anexos || []).length > 0) meta.push(`<span>🔗 ${t.anexos.length}</span>`);
 
     const rascunhoBadge = t.is_rascunho ? '<span class="rascunho-badge">Rascunho</span>' : '';
-    const quickDone = (podeAndamento(t) && !t.concluida && !t.is_rascunho)
-        ? `<button class="quick-done-btn" onclick="event.stopPropagation();concluirRapido('${t.id}')" title="Marcar como Concluída">✓</button>`
+    const quickDone = (podeAndamento(t) && t.status === 'Em revisão' && !t.is_rascunho)
+        ? `<button class="quick-done-btn" onclick="event.stopPropagation();concluirRapido('${t.id}')" title="✓ Marcar como Concluída">✓</button>`
         : '';
     return `
     <div class="task-card${t.concluida?' concluida':''}${t.is_rascunho?' rascunho':''}" data-id="${escaparAttr(t.id)}" data-prio="${escaparAttr(t.prioridade)}" onclick="abrirTarefa('${t.id}')">
@@ -3053,6 +3127,9 @@ async function salvarUsuario() {
 // MODAL DETALHE TAREFA
 // ============================================
 function abrirTarefa(id) {
+    // Rascunho cards open directly in edit mode
+    const tr = estado.tarefas.find(x => x.id === id);
+    if (tr && tr.is_rascunho) { abrirEditarRascunho(id); return; }
     const t = estado.tarefas.find(x => x.id === id);
     if (!t) return;
     estado.tarefaModalId = id;
@@ -3281,6 +3358,15 @@ async function postarComentario(tid) {
 // ============================================
 // CRIAR / EDITAR / EXCLUIR TAREFA
 // ============================================
+function abrirEditarRascunho(id) {
+    // Open an existing rascunho card for completion
+    window._ehNovaTarefa = true;
+    window._rascunhoCriado = true;
+    window._rascunhoId = id;
+    window._finalizandoTarefa = false;
+    abrirEditarTarefa(id, false); // edit mode but with draft semantics
+}
+
 function abrirNovaTarefa() {
     if (!ehAdmin()) return;
     abrirEditarTarefa(null, true, null);
@@ -3395,8 +3481,12 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
         </div>
         <div class="modal-actions">
             ${!novaTarefa && ehAdmin() ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
-            <button class="btn" onclick="${novaTarefa?'cancelarNovaForma()':'fecharModal()'}">${novaTarefa?'🗑️ Descartar':'Cancelar'}</button>
-            <button class="btn success" onclick="salvarTarefa(${novaTarefa})">${novaTarefa?'➕ Criar':'💾 Salvar'}</button>
+            <button class="btn" onclick="${(novaTarefa||t.is_rascunho)?'cancelarNovaForma()':'fecharModal()'}">
+                ${(novaTarefa||t.is_rascunho)?'🗑️ Descartar':'Cancelar'}
+            </button>
+            <button class="btn success" onclick="salvarTarefa(${novaTarefa||t.is_rascunho})">
+                ${(novaTarefa||t.is_rascunho)?'➕ Criar':'💾 Salvar'}
+            </button>
         </div>
     `);
     redesenharTags();
@@ -3428,9 +3518,10 @@ function removerTag(tag) {
 }
 
 function salvarTarefa(novaTarefa) {
+    window._finalizandoTarefa = true;
     const id = document.getElementById('edit-id').value;
     const titulo = document.getElementById('edit-titulo').value.trim();
-    if (!titulo) { toast('Título obrigatório', 'warn'); return; }
+    if (!titulo) { window._finalizandoTarefa = false; toast('Título obrigatório', 'warn'); return; }
     const dados = {
         id,
         titulo,
@@ -3462,12 +3553,17 @@ function salvarTarefa(novaTarefa) {
         const idx = estado.tarefas.findIndex(x => x.id === id);
         if (idx === -1) return;
         dados.anexos = window._editandoAnexos || estado.tarefas[idx].anexos || [];
-        dados.criado_por = estado.tarefas[idx].criado_por;
+        dados.criado_por = estado.tarefas[idx].criado_por || estado.usuario_logado?.id;
         dados.concluida = dados.status === 'Concluída';
         dados.is_rascunho = false;
+        // If this was a rascunho being finalized via edit mode
+        if (estado.tarefas[idx].is_rascunho) {
+            toast('Tarefa criada ✓', 'success');
+        } else {
+            toast('Atualizada ✓', 'success');
+        }
         estado.tarefas[idx] = dados;
         limparRascunho();
-        toast('Atualizada ✓', 'success');
     }
     dbUpsertTarefa(dados);
     renderTudo();
@@ -3642,47 +3738,54 @@ function instalarAutosave() {
     campos.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.addEventListener('input', () => { agendarSalvarRascunho(); criarRascunhoCardSeNecessario(); });
-        el.addEventListener('change', () => { agendarSalvarRascunho(); criarRascunhoCardSeNecessario(); });
+        el.addEventListener('input', agendarSalvarRascunho);
+        el.addEventListener('change', agendarSalvarRascunho);
     });
     const id = document.getElementById('edit-id')?.value;
     if (id) restaurarRascunho(id);
 }
 
-function criarRascunhoCardSeNecessario() {
-    if (!window._ehNovaTarefa || window._rascunhoCriado) return;
+function atualizarRascunhoCard() {
+    // Called when modal closes on a new-task form that has content
     const id = window._rascunhoId;
     if (!id) return;
-    window._rascunhoCriado = true;
-    // Create draft card in estado with current form values
-    const titulo = document.getElementById('edit-titulo')?.value || '';
+    const titulo = document.getElementById('edit-titulo')?.value?.trim() || '';
+    const descricao = document.getElementById('edit-descricao')?.value || '';
+    if (!titulo && !descricao) return; // nothing typed, don't create card
     const status = document.getElementById('edit-status')?.value || 'Backlog';
     const prioridade = document.getElementById('edit-prioridade')?.value || 'Média';
     const responsavel_id = document.getElementById('edit-responsavel')?.value || estado.usuario_logado?.id || null;
-    const draft = {
+    const prazo = document.getElementById('edit-prazo')?.value || null;
+    const draftCard = {
         id,
         titulo: titulo || '(rascunho)',
-        descricao: '',
+        descricao,
         status,
         prioridade,
         responsavel_id,
-        prazo: null,
-        tags: [],
-        subtarefas: [],
-        anexos: [],
+        prazo,
+        tags: [...(window._editandoTags || [])],
+        subtarefas: [...(window._editandoSubtarefas || [])],
+        anexos: [...(window._editandoAnexos || [])],
         concluida: false,
         is_rascunho: true,
         criado_por: estado.usuario_logado?.id || null
     };
-    estado.tarefas.push(draft);
+    const idx = estado.tarefas.findIndex(t => t.id === id);
+    if (idx !== -1) estado.tarefas[idx] = draftCard;
+    else estado.tarefas.push(draftCard);
+    window._rascunhoCriado = true;
+    salvar();
     renderKanban();
     renderMinhas();
 }
 
 function cancelarNovaForma() {
-    if (window._rascunhoCriado && window._rascunhoId) {
+    window._finalizandoTarefa = true; // prevent fecharModal from re-saving draft
+    if (window._rascunhoId) {
         estado.tarefas = estado.tarefas.filter(t => t.id !== window._rascunhoId);
         if (MODO_NUVEM && sb) dbDeleteTarefa(window._rascunhoId).catch(() => {});
+        salvar();
         renderKanban();
         renderMinhas();
     }
@@ -3792,24 +3895,51 @@ function iniciarAI() {
     const minhas = estado.tarefas.filter(t => t.responsavel_id === u.id && t.status !== 'Concluída' && !t.is_rascunho);
     const urgentes = minhas.filter(t => t.prioridade === 'Urgente');
     const atrasadas = minhas.filter(t => t.prazo && new Date(t.prazo + 'T00:00:00') < new Date());
-    let msg = `Oi, ${nome}! 👋`;
+
+    // Build greeting text
+    let greeter;
     if (minhas.length === 0) {
-        msg += ' Você não tem tarefas pendentes. Ótimo trabalho! 🎉';
+        greeter = `Oi, ${nome}! 👋 Você não tem tarefas pendentes. Ótimo trabalho! 🎉`;
     } else {
-        msg += ` Você tem <strong>${minhas.length}</strong> tarefa${minhas.length>1?'s':''} pendente${minhas.length>1?'s':''}`;
-        if (urgentes.length > 0) msg += `, sendo <strong>${urgentes.length} urgente${urgentes.length>1?'s':''}</strong> 🚨`;
-        if (atrasadas.length > 0) msg += ` e <strong>${atrasadas.length} atrasada${atrasadas.length>1?'s':''}</strong> ⚠️`;
-        msg += '.';
-        if (minhas.length <= 3) {
-            msg += '<br><br>Suas tarefas:<br>';
-            minhas.forEach(t => {
-                msg += `• <strong>${t.id}</strong>: ${t.titulo}`;
-                if (t.prazo) msg += ` (prazo: ${isoToBR(t.prazo)})`;
-                msg += '<br>';
-            });
+        let partes = [`${minhas.length} tarefa${minhas.length>1?'s':''} pendente${minhas.length>1?'s':''}`];
+        if (urgentes.length > 0) partes.push(`${urgentes.length} urgente${urgentes.length>1?'s':''} 🚨`);
+        if (atrasadas.length > 0) partes.push(`${atrasadas.length} atrasada${atrasadas.length>1?'s':''} ⚠️`);
+        greeter = `Oi, ${nome}! 👋 Você tem ${partes.join(', ')}.`;
+        if (minhas.length === 1) {
+            greeter += ` A tarefa é: <strong>${escapar(minhas[0].titulo)}</strong>. Que tal retomá-la agora?`;
+        } else if (minhas.length <= 3) {
+            greeter += '<br>';
+            const topTask = urgentes[0] || atrasadas[0] || minhas[0];
+            greeter += ` A mais prioritária: <strong>${escapar(topTask.titulo)}</strong>`;
+            if (topTask.prazo) greeter += ` (prazo ${isoToBR(topTask.prazo)})`;
+            greeter += '. Que tal começar por ela?';
         }
     }
-    adicionarMensagemAI(msg, 'bot');
+
+    // Show auto-popup bubble
+    const bubble = document.getElementById('ai-greeting-bubble');
+    const body = document.getElementById('ai-greeting-body');
+    const dot = document.getElementById('ai-notif-dot');
+    if (bubble && body) {
+        body.innerHTML = greeter;
+        bubble.classList.add('visible');
+        if (dot) dot.classList.add('visible');
+        // Auto-dismiss after 12 seconds
+        window._greetingTimer = setTimeout(dispensarGreeting, 12000);
+    }
+    // Also add to chat history for when user opens panel
+    adicionarMensagemAI(greeter, 'bot');
+}
+
+function dispensarGreeting() {
+    clearTimeout(window._greetingTimer);
+    const bubble = document.getElementById('ai-greeting-bubble');
+    if (bubble) bubble.classList.remove('visible');
+}
+
+function abrirAssistente() {
+    dispensarGreeting();
+    if (!_aiOpen) toggleAI();
 }
 
 function adicionarMensagemAI(html, tipo) {
