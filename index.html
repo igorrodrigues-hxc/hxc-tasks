@@ -1326,6 +1326,286 @@ footer {
 }
 footer strong { color: white; }
 
+
+/* ============================================
+   v4 · COLLAPSIBLE ALERT
+============================================ */
+.alert-box {
+    position: relative;
+    cursor: default;
+}
+.alert-toggle-btn {
+    background: rgba(0,0,0,0.2);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+.alert-toggle-btn:hover { background: rgba(0,0,0,0.35); }
+.alert-box.collapsed .alert-list { display: none; }
+.alert-box .alert-summary { font-size:14px; font-weight:600; }
+.alert-box .alert-list { margin-top:8px; }
+
+/* ============================================
+   v4 · DRAFT CARD
+============================================ */
+.task-card.rascunho {
+    border-left-color: #a78bfa;
+    border-style: dashed;
+    border-width: 2px;
+    opacity: 0.9;
+}
+.rascunho-badge {
+    display: inline-block;
+    background: #7c3aed;
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: 6px;
+}
+
+/* ============================================
+   v4 · QUICK COMPLETE BUTTON
+============================================ */
+.task-card { overflow: visible; }
+.quick-done-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--st-done);
+    color: white;
+    border: 2px solid var(--bg-surface);
+    font-size: 13px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s;
+    z-index: 10;
+    line-height: 1;
+}
+.task-card:hover .quick-done-btn { display: flex; }
+.quick-done-btn:hover { transform: scale(1.2); background: #15803d; }
+
+/* ============================================
+   v4 · COLUMN PROGRESS BAR
+============================================ */
+.kanban-progress-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.25);
+    margin-top: 8px;
+    overflow: hidden;
+}
+.kanban-progress-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.85);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* ============================================
+   v4 · EMPTY COLUMN STATE
+============================================ */
+.kanban-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 16px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+    gap: 8px;
+    user-select: none;
+    min-height: 160px;
+}
+.kanban-empty-icon {
+    font-size: 32px;
+    animation: float-hint 3s ease-in-out infinite;
+}
+@keyframes float-hint {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* ============================================
+   v4 · SETTINGS TAB (super admin only)
+============================================ */
+.tab-settings-hidden { display: none !important; }
+
+/* ============================================
+   v4 · USER CHIP COUNTER
+============================================ */
+.user-task-count {
+    background: rgba(243,146,8,0.9);
+    color: white;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    min-width: 18px;
+    text-align: center;
+    display: none;
+}
+.user-task-count.visible { display: inline-block; }
+
+/* ============================================
+   v4 · AI ASSISTANT
+============================================ */
+.ai-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary), #2E5BBA);
+    color: white;
+    font-size: 22px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(1,102,179,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 900;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(1,102,179,0.6); }
+.ai-fab.open { background: linear-gradient(135deg, #475569, #334155); }
+
+.ai-panel {
+    position: fixed;
+    bottom: 92px;
+    right: 28px;
+    width: 320px;
+    max-height: 460px;
+    background: var(--bg-surface);
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+    border: 1px solid var(--border);
+    display: none;
+    flex-direction: column;
+    z-index: 899;
+    overflow: hidden;
+}
+.ai-panel.open { display: flex; animation: ai-slide-up 0.25s ease-out; }
+@keyframes ai-slide-up {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+.ai-panel-header {
+    padding: 14px 16px 10px;
+    background: linear-gradient(135deg, var(--c-primary), #2E5BBA);
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ai-panel-header span { font-size: 18px; }
+.ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 320px;
+}
+.ai-msg {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.55;
+    max-width: 90%;
+}
+.ai-msg.bot {
+    background: var(--bg-surface-3);
+    color: var(--text-primary);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+.ai-msg.user {
+    background: var(--c-primary);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+.ai-input-row {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.ai-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 12px;
+    font-family: inherit;
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+.ai-input:focus { outline: none; border-color: var(--c-primary); }
+.ai-send-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+}
+.ai-send-btn:hover { background: var(--c-primary-dark); }
+
+/* ============================================
+   v4 · SUBTAREFAS IN FORM
+============================================ */
+.form-subt-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.form-subt-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface-2);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+.form-subt-item input[type="checkbox"] { cursor: pointer; accent-color: var(--c-primary); }
+.form-subt-item .subt-text { flex: 1; color: var(--text-primary); }
+.form-subt-item .subt-remove {
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    font-size: 12px; padding: 0 4px; opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+}
+.form-subt-item:hover .subt-remove { opacity: 1; }
+.form-subt-item:hover .subt-remove:hover { color: #ef4444; }
+.form-subt-add { display: flex; gap: 6px; }
+.form-subt-add input { flex: 1; }
+
 </style>
 </head>
 <body>
@@ -1355,14 +1635,7 @@ footer strong { color: white; }
             <div id="login-error" class="login-error"></div>
             <button type="submit" class="btn primary">Entrar →</button>
         </form>
-        <div class="login-help">
-            Modo local sem Supabase configurado: use <kbd>admin</kbd> / <kbd>hxc-tasks-2026</kbd> pra testar.<br>
-            <div style="display:flex;gap:6px;margin-top:10px;justify-content:center;flex-wrap:wrap">
-                <button type="button" class="btn sm" onclick="preencherLoginExemplo('superadmin')">Admin</button>
-                <button type="button" class="btn sm" onclick="preencherLoginExemplo('editor')">Editor</button>
-                <button type="button" class="btn sm" onclick="preencherLoginExemplo('viewer')">Viewer</button>
-            </div>
-        </div>
+
     </div>
 </div>
 
@@ -1370,7 +1643,7 @@ footer strong { color: white; }
 <div id="app" hidden>
 <header class="header">
     <div class="header-controls-left">
-        <div id="save-status" class="user-chip"><span class="avatar">?</span> Carregando...</div>
+        <div id="save-status" class="user-chip"><span class="avatar">?</span> Carregando... <span id="user-task-count" class="user-task-count"></span></div>
         <div id="conn-status" class="conn-status local">💾 Modo local</div>
     </div>
     <div class="header-controls">
@@ -1400,9 +1673,13 @@ footer strong { color: white; }
     </div>
 </header>
 
-<div class="alert-box" id="alert-box">
+<div class="alert-box collapsed" id="alert-box">
     <span class="alert-icon">📋</span>
-    <div class="alert-text" id="alert-text">Carregando...</div>
+    <div class="alert-text" id="alert-text" style="flex:1">
+        <span class="alert-summary" id="alert-summary">Carregando...</span>
+        <div class="alert-list" id="alert-list"></div>
+    </div>
+    <button class="alert-toggle-btn" id="alert-toggle-btn" onclick="toggleAlerta()">▼ Ver</button>
 </div>
 
 <div class="toolbar">
@@ -1418,12 +1695,7 @@ footer strong { color: white; }
     <button class="btn tab active" data-vista="kanban" onclick="trocarVista('kanban')">📋 Kanban</button>
     <button class="btn tab" data-vista="calendario" onclick="trocarVista('calendario')">📅 Calendário</button>
     <button class="btn tab" data-vista="minhas" onclick="trocarVista('minhas')">👤 Minhas</button>
-    <div class="more-tab-wrap">
-        <button class="btn tab more-tab" onclick="toggleMoreMenu(event)">⋯ Mais</button>
-        <div id="more-menu" class="more-menu">
-            <button class="more-menu-item" data-vista="settings" onclick="trocarVistaFromMenu('settings', event)">⚙️ Configurações</button>
-        </div>
-    </div>
+    <button id="tab-settings" class="btn tab tab-settings-hidden" data-vista="settings" onclick="trocarVista('settings')">⚙️ Configurações</button>
 </div>
 
 <div id="view-kanban" class="view active"></div>
@@ -1432,8 +1704,20 @@ footer strong { color: white; }
 <div id="view-settings" class="view"></div>
 
 <footer>
-    <p><strong>HiperXCAP Tasks</strong> · v3.0.0 · Gestão de demandas do time</p>
+    <p><strong>HiperXCAP Tasks</strong> · v4.0.0 · Gestão de demandas do time</p>
 </footer>
+
+<!-- AI ASSISTANT -->
+<button class="ai-fab" id="ai-fab" onclick="toggleAI()" title="Assistente HXC" style="display:none">🤖</button>
+<div class="ai-panel" id="ai-panel">
+    <div class="ai-panel-header"><span>🤖</span> Assistente HXC</div>
+    <div class="ai-messages" id="ai-messages"></div>
+    <div class="ai-input-row">
+        <input type="text" id="ai-input" class="ai-input" placeholder="Pergunte algo..." onkeydown="if(event.key==='Enter') enviarMensagemAI()">
+        <button class="ai-send-btn" onclick="enviarMensagemAI()">➤</button>
+    </div>
+</div>
+
 </div>
 
 <div id="modal-overlay" class="modal-overlay">
@@ -1471,7 +1755,7 @@ if (MODO_NUVEM) {
 // ============================================
 // CONSTANTS
 // ============================================
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '4.0.0';
 const STORAGE_KEY = 'hxc_tasks_v1';
 const SESSION_KEY = 'hxc_tasks_session_v1';
 const THEME_KEY = 'hxc_tasks_theme';
@@ -1864,11 +2148,19 @@ async function entrarNoApp() {
     document.getElementById('login-screen').hidden = true;
     document.getElementById('app').hidden = false;
     atualizarStatusSalvo();
+    // Show settings tab only for super admins
+    const tabSettings = document.getElementById('tab-settings');
+    if (tabSettings) tabSettings.classList.toggle('tab-settings-hidden', !ehAdmin());
+    // Show AI fab
+    const aiFab = document.getElementById('ai-fab');
+    if (aiFab) aiFab.style.display = 'flex';
     if (MODO_NUVEM && sb) {
         await carregar();
         inscreverRealtime();
     }
     renderTudo();
+    // Trigger AI greeting after render
+    setTimeout(() => iniciarAI(), 800);
 }
 async function handleLogin(ev) {
     if (ev) ev.preventDefault();
@@ -1907,7 +2199,13 @@ function atualizarStatusSalvo() {
     const el = document.getElementById('save-status');
     if (!el || !estado.usuario_logado) return;
     const u = estado.usuario_logado;
-    el.innerHTML = `<span class="avatar" style="background:${u.cor || hashCor(u.id)}">${escaparAttr(u.avatar || avatarFromName(u.nome))}</span> ${escapar(u.nome)} <span class="role-tag">${ROLE_LABELS[u.role]}</span>`;
+    const minhasTarefas = estado.tarefas.filter(t => t.responsavel_id === u.id && t.status !== 'Concluída' && !t.is_rascunho).length;
+    const counterEl = document.getElementById('user-task-count');
+    if (counterEl) {
+        counterEl.textContent = minhasTarefas > 0 ? minhasTarefas : '';
+        counterEl.classList.toggle('visible', minhasTarefas > 0);
+    }
+    el.innerHTML = `<span class="avatar" style="background:${u.cor || hashCor(u.id)}">${escaparAttr(u.avatar || avatarFromName(u.nome))}</span> ${escapar(u.nome)} <span class="role-tag">${ROLE_LABELS[u.role]}</span> <span id="user-task-count" class="user-task-count${minhasTarefas>0?' visible':''}">${minhasTarefas>0?minhasTarefas:''}</span>`;
 }
 
 // ============================================
@@ -1985,34 +2283,32 @@ function renderTudo() {
 
 function renderAlerta() {
     const box = document.getElementById('alert-box');
-    const alerta = document.getElementById('alert-text');
-    if (!box || !alerta) return;
+    const summaryEl = document.getElementById('alert-summary');
+    const listEl = document.getElementById('alert-list');
+    const btn = document.getElementById('alert-toggle-btn');
+    if (!box || !summaryEl || !listEl) return;
 
-    const tarefas = tarefasFiltradas().filter(t => t.status !== 'Concluída');
+    const tarefas = tarefasFiltradas().filter(t => t.status !== 'Concluída' && !t.is_rascunho);
     if (tarefas.length === 0) {
-        box.className = 'alert-box done';
+        box.className = 'alert-box done collapsed';
         box.querySelector('.alert-icon').textContent = '🎉';
-        alerta.innerHTML = '<strong>Tudo concluído!</strong> Nenhuma tarefa pendente no time. Bora criar novas demandas?';
+        summaryEl.innerHTML = '<strong>Tudo concluído!</strong> Nenhuma tarefa pendente.';
+        listEl.innerHTML = '';
+        if (btn) btn.style.display = 'none';
         return;
     }
 
-    // Ordena: urgentes primeiro, depois prazo mais próximo, depois alta prioridade
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     const farFuture = new Date(8640000000000000);
     const pesoPrio = { 'Urgente': 0, 'Alta': 1, 'Média': 2, 'Baixa': 3 };
 
     const ordenadas = [...tarefas].sort((a, b) => {
-        // Atrasadas vêm primeiro
         const aAtras = a.prazo && parseDateISO(a.prazo) < hoje;
         const bAtras = b.prazo && parseDateISO(b.prazo) < hoje;
         if (aAtras !== bAtras) return aAtras ? -1 : 1;
-
-        // Depois urgentes
         const pa = pesoPrio[a.prioridade] ?? 9;
         const pb = pesoPrio[b.prioridade] ?? 9;
         if (pa !== pb) return pa - pb;
-
-        // Depois por prazo (sem prazo vai pro fim)
         const dA = a.prazo ? parseDateISO(a.prazo) : farFuture;
         const dB = b.prazo ? parseDateISO(b.prazo) : farFuture;
         return dA - dB;
@@ -2023,16 +2319,18 @@ function renderAlerta() {
     const atrasadas = tarefas.filter(t => t.prazo && parseDateISO(t.prazo) < hoje).length;
     const urgentes = tarefas.filter(t => t.prioridade === 'Urgente').length;
 
-    box.className = 'alert-box' + (temUrgente ? ' urgente' : '');
+    const collapsed = box.classList.contains('collapsed');
+    box.className = 'alert-box' + (temUrgente ? ' urgente' : '') + (collapsed ? ' collapsed' : '');
     box.querySelector('.alert-icon').textContent = temUrgente ? '🚨' : '📋';
 
-    let resumo = `<strong>${tarefas.length} ${tarefas.length===1?'tarefa pendente':'tarefas pendentes'}</strong>`;
+    let resumoTxt = `<strong>${tarefas.length} ${tarefas.length===1?'tarefa pendente':'tarefas pendentes'}</strong>`;
     const partes = [];
     if (atrasadas > 0) partes.push(`${atrasadas} atrasada${atrasadas>1?'s':''}`);
     if (urgentes > 0) partes.push(`${urgentes} urgente${urgentes>1?'s':''}`);
-    if (partes.length) resumo += ` · ${partes.join(' · ')}`;
+    if (partes.length) resumoTxt += ` · ${partes.join(' · ')}`;
+    summaryEl.innerHTML = resumoTxt;
 
-    let html = `${resumo}<ul>`;
+    let listHtml = '<ul>';
     proximas.forEach(t => {
         const prazo = t.prazo ? ` · ${isoToBR(t.prazo)}` : '';
         const prioIcon = PRIORITY_EMOJI[t.prioridade] || '';
@@ -2040,14 +2338,27 @@ function renderAlerta() {
         const quem = responsavel ? ` · ${escapar(responsavel.nome.split(' ')[0])}` : '';
         const atrasada = t.prazo && parseDateISO(t.prazo) < hoje;
         const prazoTxt = atrasada ? `<small style="color:#fef3c7">⚠️ atrasada${prazo}</small>` : `<small>${prazo}${quem}</small>`;
-        html += `<li onclick="abrirTarefa('${t.id}')" title="Abrir tarefa">
+        listHtml += `<li onclick="abrirTarefa('${t.id}')" title="Abrir tarefa">
             <span class="alert-code">${escapar(t.id)}</span>
             ${prioIcon} ${escapar(t.titulo)}
             ${prazoTxt}
         </li>`;
     });
-    html += '</ul>';
-    alerta.innerHTML = html;
+    listHtml += '</ul>';
+    listEl.innerHTML = listHtml;
+
+    if (btn) {
+        btn.style.display = 'inline-block';
+        btn.textContent = collapsed ? '▼ Ver' : '▲ Fechar';
+    }
+}
+
+function toggleAlerta() {
+    const box = document.getElementById('alert-box');
+    const btn = document.getElementById('alert-toggle-btn');
+    if (!box) return;
+    box.classList.toggle('collapsed');
+    if (btn) btn.textContent = box.classList.contains('collapsed') ? '▼ Ver' : '▲ Fechar';
 }
 
 function renderToolbar() {
@@ -2087,18 +2398,41 @@ function renderKanban() {
     const cont = document.getElementById('view-kanban');
     if (!cont) return;
     const ts = tarefasFiltradas();
+    const totalAll = estado.tarefas.filter(t => !t.is_rascunho).length;
     let html = '<div class="kanban-board">';
     STATUSES.forEach(status => {
-        const tasks = ts.filter(t => t.status === status);
+        const tasks = ts.filter(t => t.status === status && !t.is_rascunho);
+        const totalInStatus = estado.tarefas.filter(t => t.status === status && !t.is_rascunho).length;
         const cls = STATUS_CLASS[status];
+        const pct = totalAll > 0 ? Math.round((totalInStatus / totalAll) * 100) : 0;
         html += `
         <div class="kanban-column">
             <div class="kanban-column-header ${cls}">
-                <span class="kanban-column-title">${STATUS_EMOJI[status]} ${escapar(status)}</span>
-                <span class="kanban-column-count">${tasks.length}</span>
+                <div style="flex:1">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span class="kanban-column-title">${STATUS_EMOJI[status]} ${escapar(status)}</span>
+                        <span class="kanban-column-count">${tasks.length}</span>
+                    </div>
+                    <div class="kanban-progress-bar"><div class="kanban-progress-fill" style="width:${pct}%"></div></div>
+                </div>
             </div>
             <div class="kanban-list" data-status="${escaparAttr(status)}">`;
-        tasks.forEach(t => { html += renderTaskCard(t); });
+        if (tasks.length === 0) {
+            const hints = {
+                'Backlog': ['📥', 'Arraste tarefas aqui'],
+                'A fazer': ['📌', 'Pronto pra começar?'],
+                'Fazendo': ['⚡', 'Mão na massa!'],
+                'Em revisão': ['🔍', 'Aguardando revisão'],
+                'Concluída': ['🎉', 'Nada concluído ainda'],
+            };
+            const [icon, msg] = hints[status] || ['📋', 'Sem tarefas'];
+            html += `<div class="kanban-empty"><span class="kanban-empty-icon">${icon}</span><span>${msg}</span></div>`;
+        } else {
+            tasks.forEach(t => { html += renderTaskCard(t); });
+        }
+        // Rascunhos desta coluna
+        const rascunhos = ts.filter(t => t.status === status && t.is_rascunho);
+        rascunhos.forEach(t => { html += renderTaskCard(t); });
         html += `</div>`;
         if (ehAdmin()) {
             html += `<button class="kanban-add" onclick="abrirNovaTarefaNoStatus('${escaparAttr(status)}')">➕ Nova tarefa</button>`;
@@ -2145,13 +2479,18 @@ function renderTaskCard(t) {
     if (coments > 0) meta.push(`<span>💬 ${coments}</span>`);
     if ((t.anexos || []).length > 0) meta.push(`<span>🔗 ${t.anexos.length}</span>`);
 
+    const rascunhoBadge = t.is_rascunho ? '<span class="rascunho-badge">Rascunho</span>' : '';
+    const quickDone = (podeAndamento(t) && !t.concluida && !t.is_rascunho)
+        ? `<button class="quick-done-btn" onclick="event.stopPropagation();concluirRapido('${t.id}')" title="Marcar como Concluída">✓</button>`
+        : '';
     return `
-    <div class="task-card${t.concluida?' concluida':''}" data-id="${escaparAttr(t.id)}" data-prio="${escaparAttr(t.prioridade)}" onclick="abrirTarefa('${t.id}')">
+    <div class="task-card${t.concluida?' concluida':''}${t.is_rascunho?' rascunho':''}" data-id="${escaparAttr(t.id)}" data-prio="${escaparAttr(t.prioridade)}" onclick="abrirTarefa('${t.id}')">
+        ${quickDone}
         <div class="task-card-top">
-            <span class="task-id">${escapar(t.id)}</span>
+            <span class="task-id">${escapar(t.id)}${rascunhoBadge}</span>
             <span class="task-prio ${prio}">${PRIORITY_EMOJI[t.prioridade]} ${escapar(t.prioridade)}</span>
         </div>
-        <div class="task-titulo">${escapar(t.titulo)}</div>
+        <div class="task-titulo">${escapar(t.titulo || '(sem título)')}</div>
         ${tagsHtml || moreTags ? `<div class="task-tags">${tagsHtml}${moreTags}</div>` : ''}
         <div class="task-card-bottom">
             <div style="display:flex;gap:8px;align-items:center">
@@ -2186,6 +2525,10 @@ function mudarStatus(id, novoStatus) {
     dbUpsertTarefa(t);
     renderTudo();
     toast(`${t.id} → ${novoStatus}`, 'success');
+}
+
+function concluirRapido(id) {
+    mudarStatus(id, 'Concluída');
 }
 
 // ============================================
@@ -2965,7 +3308,11 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
     }
     window._editandoTags = [...(t.tags || [])];
     window._editandoAnexos = [...(t.anexos || [])];
+    window._editandoSubtarefas = [...(t.subtarefas || [])];
     window._editandoId = t.id;
+    window._ehNovaTarefa = novaTarefa;
+    window._rascunhoCriado = false;
+    window._rascunhoId = t.id;
 
     const usersOpts = ['<option value="">— sem responsável —</option>',
         ...estado.usuarios.map(u => `<option value="${escaparAttr(u.id)}" ${t.responsavel_id===u.id?'selected':''}>${escapar(u.nome)} (${ROLE_LABELS[u.role]})</option>`)
@@ -3025,6 +3372,15 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
             </div>
 
             <div class="form-group">
+                <label class="form-label">☑️ Subtarefas</label>
+                <div class="form-subt-list" id="form-subt-list"></div>
+                <div class="form-subt-add">
+                    <input type="text" id="form-subt-input" class="form-input" placeholder="+ Nova subtarefa (Enter para adicionar)" onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarSubtarefaForm();}">
+                    <button type="button" class="btn primary sm" onclick="adicionarSubtarefaForm()">+</button>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">🔗 Links / Anexos</label>
                 <div id="anexos-wrap-form" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
                 <div style="display:flex;gap:6px">
@@ -3032,19 +3388,20 @@ function abrirEditarTarefa(id, novaTarefa = false, statusPre = null) {
                     <input type="text" id="form-anexo-url" class="form-input" placeholder="https://...">
                     <button type="button" class="btn primary sm" onclick="adicionarAnexoForm()" title="Adicionar link">+</button>
                 </div>
-                <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block">Cole a URL e pressione + para adicionar. Você pode adicionar quantos links quiser.</small>
+                <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block">Cole a URL e pressione + para adicionar.</small>
             </div>
 
             <div id="draft-indicator" style="display:none;font-size:11px;color:var(--text-muted);text-align:right;padding-top:4px">💾 Rascunho salvo</div>
         </div>
         <div class="modal-actions">
             ${!novaTarefa && ehAdmin() ? `<button class="btn danger" onclick="excluirTarefa('${t.id}')">🗑️ Excluir</button>` : ''}
-            <button class="btn" onclick="fecharModal()">Cancelar</button>
+            <button class="btn" onclick="${novaTarefa?'cancelarNovaForma()':'fecharModal()'}">${novaTarefa?'🗑️ Descartar':'Cancelar'}</button>
             <button class="btn success" onclick="salvarTarefa(${novaTarefa})">${novaTarefa?'➕ Criar':'💾 Salvar'}</button>
         </div>
     `);
     redesenharTags();
     redesenharAnexosForm();
+    redesenharSubtarefasForm();
     instalarAutosave();
 }
 
@@ -3083,23 +3440,31 @@ function salvarTarefa(novaTarefa) {
         responsavel_id: document.getElementById('edit-responsavel').value || null,
         prazo: document.getElementById('edit-prazo').value || null,
         tags: window._editandoTags || [],
-        subtarefas: [], anexos: [],
+        subtarefas: window._editandoSubtarefas || [],
+        anexos: [],
         concluida: false
     };
     if (novaTarefa) {
         dados.criado_por = estado.usuario_logado?.id || null;
         dados.anexos = window._editandoAnexos || [];
-        estado.tarefas.push(dados);
+        dados.concluida = dados.status === 'Concluída';
+        dados.is_rascunho = false;
+        if (window._rascunhoCriado) {
+            const idx = estado.tarefas.findIndex(x => x.id === id);
+            if (idx !== -1) estado.tarefas[idx] = dados;
+            else estado.tarefas.push(dados);
+        } else {
+            estado.tarefas.push(dados);
+        }
         limparRascunho();
         toast('Tarefa criada ✓', 'success');
     } else {
         const idx = estado.tarefas.findIndex(x => x.id === id);
         if (idx === -1) return;
-        // Mantém subtarefas; usa anexos do form (podem ter sido editados)
-        dados.subtarefas = estado.tarefas[idx].subtarefas || [];
         dados.anexos = window._editandoAnexos || estado.tarefas[idx].anexos || [];
         dados.criado_por = estado.tarefas[idx].criado_por;
         dados.concluida = dados.status === 'Concluída';
+        dados.is_rascunho = false;
         estado.tarefas[idx] = dados;
         limparRascunho();
         toast('Atualizada ✓', 'success');
@@ -3125,15 +3490,9 @@ async function excluirTarefa(id) {
 // ============================================
 function trocarVista(vista) {
     estado.vista_atual = vista;
-    const principais = ['kanban','calendario','minhas'];
     document.querySelectorAll('.btn.tab').forEach(t => {
         const v = t.getAttribute('data-vista');
-        const ehMais = t.classList.contains('more-tab');
-        if (ehMais) t.classList.toggle('active', !principais.includes(vista));
-        else t.classList.toggle('active', v === vista);
-    });
-    document.querySelectorAll('.more-menu-item').forEach(item => {
-        item.classList.toggle('active', item.getAttribute('data-vista') === vista);
+        t.classList.toggle('active', v === vista);
     });
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const v = document.getElementById('view-' + vista);
@@ -3142,15 +3501,8 @@ function trocarVista(vista) {
     if (vista === 'settings' && podeGerenciar()) renderSettings();
     if (vista === 'minhas') renderMinhas();
 }
-function toggleMoreMenu(ev) {
-    if (ev) ev.stopPropagation();
-    document.getElementById('more-menu')?.classList.toggle('open');
-}
-function trocarVistaFromMenu(vista, ev) {
-    if (ev) ev.stopPropagation();
-    document.getElementById('more-menu')?.classList.remove('open');
-    trocarVista(vista);
-}
+function toggleMoreMenu(ev) { /* no-op in v4 */ }
+function trocarVistaFromMenu(vista, ev) { trocarVista(vista); }
 
 // ============================================
 // SHORTCUTS + SEARCH
@@ -3241,6 +3593,45 @@ function removerAnexoForm(idx) {
 }
 
 // ============================================
+// SUBTAREFAS NO FORMULÁRIO
+// ============================================
+function redesenharSubtarefasForm() {
+    const w = document.getElementById('form-subt-list');
+    if (!w) return;
+    const subs = window._editandoSubtarefas || [];
+    if (subs.length === 0) {
+        w.innerHTML = '<span style="color:var(--text-muted);font-size:12px;font-style:italic">Nenhuma subtarefa</span>';
+        return;
+    }
+    w.innerHTML = subs.map((s, i) => `
+        <div class="form-subt-item">
+            <input type="checkbox" ${s.feito?'checked':''} onchange="toggleSubtarefaForm(${i}, this.checked)">
+            <span class="subt-text" style="${s.feito?'text-decoration:line-through;color:var(--text-muted)':''}">${escapar(s.texto)}</span>
+            <button class="subt-remove" onclick="removerSubtarefaForm(${i})" title="Remover">✕</button>
+        </div>
+    `).join('');
+}
+function adicionarSubtarefaForm() {
+    const inp = document.getElementById('form-subt-input');
+    if (!inp || !inp.value.trim()) return;
+    window._editandoSubtarefas = window._editandoSubtarefas || [];
+    window._editandoSubtarefas.push({ texto: inp.value.trim(), feito: false });
+    inp.value = '';
+    redesenharSubtarefasForm();
+    salvarRascunho();
+}
+function removerSubtarefaForm(idx) {
+    if (!window._editandoSubtarefas) return;
+    window._editandoSubtarefas.splice(idx, 1);
+    redesenharSubtarefasForm();
+}
+function toggleSubtarefaForm(idx, feito) {
+    if (!window._editandoSubtarefas || !window._editandoSubtarefas[idx]) return;
+    window._editandoSubtarefas[idx].feito = feito;
+    redesenharSubtarefasForm();
+}
+
+// ============================================
 // AUTO-SAVE RASCUNHO (evita perda de conteúdo)
 // ============================================
 const DRAFT_KEY = 'hxc_tasks_draft_v1';
@@ -3251,12 +3642,55 @@ function instalarAutosave() {
     campos.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.addEventListener('input', agendarSalvarRascunho);
-        el.addEventListener('change', agendarSalvarRascunho);
+        el.addEventListener('input', () => { agendarSalvarRascunho(); criarRascunhoCardSeNecessario(); });
+        el.addEventListener('change', () => { agendarSalvarRascunho(); criarRascunhoCardSeNecessario(); });
     });
-    // Verificar se há rascunho para restaurar
     const id = document.getElementById('edit-id')?.value;
     if (id) restaurarRascunho(id);
+}
+
+function criarRascunhoCardSeNecessario() {
+    if (!window._ehNovaTarefa || window._rascunhoCriado) return;
+    const id = window._rascunhoId;
+    if (!id) return;
+    window._rascunhoCriado = true;
+    // Create draft card in estado with current form values
+    const titulo = document.getElementById('edit-titulo')?.value || '';
+    const status = document.getElementById('edit-status')?.value || 'Backlog';
+    const prioridade = document.getElementById('edit-prioridade')?.value || 'Média';
+    const responsavel_id = document.getElementById('edit-responsavel')?.value || estado.usuario_logado?.id || null;
+    const draft = {
+        id,
+        titulo: titulo || '(rascunho)',
+        descricao: '',
+        status,
+        prioridade,
+        responsavel_id,
+        prazo: null,
+        tags: [],
+        subtarefas: [],
+        anexos: [],
+        concluida: false,
+        is_rascunho: true,
+        criado_por: estado.usuario_logado?.id || null
+    };
+    estado.tarefas.push(draft);
+    renderKanban();
+    renderMinhas();
+}
+
+function cancelarNovaForma() {
+    if (window._rascunhoCriado && window._rascunhoId) {
+        estado.tarefas = estado.tarefas.filter(t => t.id !== window._rascunhoId);
+        if (MODO_NUVEM && sb) dbDeleteTarefa(window._rascunhoId).catch(() => {});
+        renderKanban();
+        renderMinhas();
+    }
+    window._rascunhoCriado = false;
+    window._ehNovaTarefa = false;
+    window._rascunhoId = null;
+    limparRascunho();
+    fecharModal();
 }
 
 function agendarSalvarRascunho() {
@@ -3324,7 +3758,153 @@ function limparRascunho() {
     clearTimeout(_draftTimer);
     window._editandoAnexos = [];
     window._editandoTags = [];
+    window._editandoSubtarefas = [];
     window._editandoId = null;
+    window._ehNovaTarefa = false;
+    window._rascunhoCriado = false;
+    window._rascunhoId = null;
+}
+
+
+// ============================================
+// AI ASSISTANT (local, rule-based)
+// ============================================
+let _aiOpen = false;
+let _aiGreetingDone = false;
+
+function toggleAI() {
+    _aiOpen = !_aiOpen;
+    const panel = document.getElementById('ai-panel');
+    const fab = document.getElementById('ai-fab');
+    if (panel) panel.classList.toggle('open', _aiOpen);
+    if (fab) fab.classList.toggle('open', _aiOpen);
+    if (_aiOpen) {
+        setTimeout(() => document.getElementById('ai-input')?.focus(), 200);
+    }
+}
+
+function iniciarAI() {
+    if (_aiGreetingDone) return;
+    _aiGreetingDone = true;
+    const u = estado.usuario_logado;
+    if (!u) return;
+    const nome = u.nome.split(' ')[0];
+    const minhas = estado.tarefas.filter(t => t.responsavel_id === u.id && t.status !== 'Concluída' && !t.is_rascunho);
+    const urgentes = minhas.filter(t => t.prioridade === 'Urgente');
+    const atrasadas = minhas.filter(t => t.prazo && new Date(t.prazo + 'T00:00:00') < new Date());
+    let msg = `Oi, ${nome}! 👋`;
+    if (minhas.length === 0) {
+        msg += ' Você não tem tarefas pendentes. Ótimo trabalho! 🎉';
+    } else {
+        msg += ` Você tem <strong>${minhas.length}</strong> tarefa${minhas.length>1?'s':''} pendente${minhas.length>1?'s':''}`;
+        if (urgentes.length > 0) msg += `, sendo <strong>${urgentes.length} urgente${urgentes.length>1?'s':''}</strong> 🚨`;
+        if (atrasadas.length > 0) msg += ` e <strong>${atrasadas.length} atrasada${atrasadas.length>1?'s':''}</strong> ⚠️`;
+        msg += '.';
+        if (minhas.length <= 3) {
+            msg += '<br><br>Suas tarefas:<br>';
+            minhas.forEach(t => {
+                msg += `• <strong>${t.id}</strong>: ${t.titulo}`;
+                if (t.prazo) msg += ` (prazo: ${isoToBR(t.prazo)})`;
+                msg += '<br>';
+            });
+        }
+    }
+    adicionarMensagemAI(msg, 'bot');
+}
+
+function adicionarMensagemAI(html, tipo) {
+    const cont = document.getElementById('ai-messages');
+    if (!cont) return;
+    const el = document.createElement('div');
+    el.className = `ai-msg ${tipo}`;
+    el.innerHTML = html;
+    cont.appendChild(el);
+    cont.scrollTop = cont.scrollHeight;
+}
+
+function enviarMensagemAI() {
+    const inp = document.getElementById('ai-input');
+    if (!inp || !inp.value.trim()) return;
+    const query = inp.value.trim();
+    inp.value = '';
+    adicionarMensagemAI(escapar(query), 'user');
+    setTimeout(() => {
+        const resp = responderAI(query.toLowerCase());
+        adicionarMensagemAI(resp, 'bot');
+    }, 300);
+}
+
+function responderAI(q) {
+    const u = estado.usuario_logado;
+    const tarefas = estado.tarefas.filter(t => !t.is_rascunho);
+
+    // Minhas tarefas
+    if (q.match(/minha|meu|atribuída|atribuido|responsavel/)) {
+        const minhas = tarefas.filter(t => t.responsavel_id === u.id && t.status !== 'Concluída');
+        if (minhas.length === 0) return 'Você não tem tarefas pendentes! 🎉';
+        let r = `Suas <strong>${minhas.length}</strong> tarefas pendentes:<br>`;
+        minhas.slice(0, 5).forEach(t => {
+            const prazo = t.prazo ? ` · ${isoToBR(t.prazo)}` : '';
+            r += `• <strong>${t.id}</strong>: ${escapar(t.titulo)} ${PRIORITY_EMOJI[t.prioridade] || ''} ${prazo}<br>`;
+        });
+        if (minhas.length > 5) r += `<em>...e mais ${minhas.length - 5}. Veja a aba Minhas.</em>`;
+        return r;
+    }
+
+    // Urgentes
+    if (q.match(/urgent|prioridade/)) {
+        const urg = tarefas.filter(t => t.prioridade === 'Urgente' && t.status !== 'Concluída');
+        if (urg.length === 0) return 'Nenhuma tarefa urgente no momento! 😌';
+        let r = `<strong>${urg.length}</strong> tarefa${urg.length>1?'s':''} urgente${urg.length>1?'s':''}:<br>`;
+        urg.forEach(t => {
+            const resp = estado.usuarios.find(u2 => u2.id === t.responsavel_id);
+            r += `• <strong>${t.id}</strong>: ${escapar(t.titulo)}${resp ? ' — ' + escapar(resp.nome.split(' ')[0]) : ''}<br>`;
+        });
+        return r;
+    }
+
+    // Atrasadas
+    if (q.match(/atrasad|prazo/)) {
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        const atrasadas = tarefas.filter(t => t.prazo && new Date(t.prazo+'T00:00:00') < hoje && t.status !== 'Concluída');
+        if (atrasadas.length === 0) return 'Nenhuma tarefa atrasada! 🎯';
+        let r = `<strong>${atrasadas.length}</strong> tarefa${atrasadas.length>1?'s':''} atrasada${atrasadas.length>1?'s':''}:<br>`;
+        atrasadas.slice(0, 5).forEach(t => {
+            r += `• <strong>${t.id}</strong>: ${escapar(t.titulo)} (prazo: ${isoToBR(t.prazo)})<br>`;
+        });
+        return r;
+    }
+
+    // Resumo / total / status
+    if (q.match(/total|quantas|resumo|status|geral/)) {
+        const pendentes = tarefas.filter(t => t.status !== 'Concluída').length;
+        const concluidas = tarefas.filter(t => t.status === 'Concluída').length;
+        let r = `📊 Resumo atual:<br>`;
+        STATUSES.forEach(s => {
+            const n = tarefas.filter(t => t.status === s).length;
+            r += `• ${STATUS_EMOJI[s]} ${s}: <strong>${n}</strong><br>`;
+        });
+        r += `<br>Total: ${tarefas.length} | Pendentes: ${pendentes} | Concluídas: ${concluidas}`;
+        return r;
+    }
+
+    // Ajuda
+    if (q.match(/ajuda|help|como|o que/)) {
+        return `Posso te ajudar com:<br>
+• <em>"minhas tarefas"</em> — ver suas pendências<br>
+• <em>"urgentes"</em> — tarefas de alta prioridade<br>
+• <em>"atrasadas"</em> — tarefas com prazo vencido<br>
+• <em>"resumo"</em> — visão geral do board<br>
+<br>Para criar ou editar tarefas, use o botão <strong>➕ Nova tarefa</strong> no quadro!`;
+    }
+
+    // Olá / oi
+    if (q.match(/^(oi|olá|ola|hey|hi|bom dia|boa tarde|boa noite)/)) {
+        const nome = (u?.nome || '').split(' ')[0];
+        return `Oi, ${escapar(nome)}! 😊 Como posso ajudar? Digite <em>"ajuda"</em> pra ver o que sei fazer.`;
+    }
+
+    return `Não entendi bem. 🤔 Tente: "minhas tarefas", "urgentes", "atrasadas" ou "resumo". Digite <em>"ajuda"</em> pra ver tudo que sei!`;
 }
 
 // ============================================
