@@ -1032,7 +1032,9 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     max-width: 720px;
     width: 100%;
     max-height: 92vh;
-    overflow-y: auto;
+    overflow: hidden;           /* clips border-radius properly */
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 24px 64px rgba(0,0,0,0.4);
 }
 .modal.small { max-width: 480px; }
@@ -1042,9 +1044,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     color: white;
     padding: 22px 24px;
     border-radius: 20px 20px 0 0;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    flex-shrink: 0;
 }
 .modal-header-top {
     display: flex;
@@ -1078,7 +1078,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     line-height: 1.2;
 }
 .modal-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; opacity: 0.9; }
-.modal-body { padding: 24px; }
+.modal-body { padding: 24px; overflow-y: auto; flex: 1; }
 .modal-actions {
     padding: 16px 24px;
     background: var(--bg-surface-2);
@@ -1088,6 +1088,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
     justify-content: flex-end;
     border-radius: 0 0 20px 20px;
     flex-wrap: wrap;
+    flex-shrink: 0;
 }
 .modal-field { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
 .modal-field:last-child { border-bottom: none; }
@@ -1259,7 +1260,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 .toast-container {
     position: fixed;
     bottom: 24px;
-    right: 24px;
+    left: 24px;
     z-index: 200;
     display: flex;
     flex-direction: column;
@@ -1284,7 +1285,7 @@ h1, h2, h3, h4, .display { font-family: var(--font-display); letter-spacing: -0.
 .toast.warn { background: var(--c-orange); }
 .toast.danger { background: #ef4444; }
 @keyframes slide-in {
-    from { transform: translateX(100%); opacity: 0; }
+    from { transform: translateX(-100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 .empty-state {
@@ -1765,7 +1766,7 @@ footer strong { color: white; }
 <div id="view-settings" class="view"></div>
 
 <footer>
-    <p><strong>HiperXCAP Tasks</strong> · v4.2.0 · Gestão de demandas do time</p>
+    <p><strong>HiperXCAP Tasks</strong> · v4.3.0 · Gestão de demandas do time</p>
 </footer>
 
 <!-- AI ASSISTANT -->
@@ -1827,7 +1828,7 @@ if (MODO_NUVEM) {
 // ============================================
 // CONSTANTS
 // ============================================
-const APP_VERSION = '4.2.0';
+const APP_VERSION = '4.3.0';
 const STORAGE_KEY = 'hxc_tasks_v1';
 const SESSION_KEY = 'hxc_tasks_session_v1';
 const THEME_KEY = 'hxc_tasks_theme';
